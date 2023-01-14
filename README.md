@@ -1,5 +1,9 @@
 # java-explore-with-me
 
+Ссылка на pull-request:
+
+https://github.com/aigeley/java-explore-with-me/pull/2
+
 Модель компонентов
 
 ![Модель компонентов](ewm_vision.png)

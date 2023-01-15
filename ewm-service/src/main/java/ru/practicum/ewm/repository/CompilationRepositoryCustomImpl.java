@@ -11,13 +11,14 @@ import ru.practicum.ewm.repository.util.QCompilation;
 import java.util.List;
 
 @Repository
-public class CompilationRepositoryCustomImpl extends ElementRepositoryAbs<Compilation> implements CompilationRepositoryCustom {
+public class CompilationRepositoryCustomImpl extends ElementRepositoryAbs<Compilation>
+        implements CompilationRepositoryCustom {
     public CompilationRepositoryCustomImpl() {
         super(Compilation.class);
     }
 
     @Override
-    public List<Compilation> getCompilations(Predicate wherePredicate, Pageable pageable) {
+    public List<Compilation> getAll(Predicate wherePredicate, Pageable pageable) {
         JPQLQuery<Compilation> query = from(QCompilation.compilation)
                 .select(QCompilation.compilation)
                 .where(wherePredicate);

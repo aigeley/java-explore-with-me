@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.element.model.Element.DATE_TIME_FORMATTER;
+import static ru.practicum.element.model.ElementProjectionMapper.DATE_TIME_FORMATTER;
 
 @Slf4j
 @AllArgsConstructor

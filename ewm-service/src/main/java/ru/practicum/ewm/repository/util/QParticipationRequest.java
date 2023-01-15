@@ -26,7 +26,8 @@ public class QParticipationRequest extends EntityPathBase<ParticipationRequest> 
 
     public static final QParticipationRequest participationRequest = new QParticipationRequest("participationRequest");
 
-    public final DateTimePath<java.time.LocalDateTime> created = createDateTime("created", java.time.LocalDateTime.class);
+    public final DateTimePath<java.time.LocalDateTime> created =
+            createDateTime("created", java.time.LocalDateTime.class);
 
     public final QEvent event;
 

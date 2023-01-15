@@ -2,11 +2,11 @@ package ru.practicum.ewm.model.category.dto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.stereotype.Component;
-import ru.practicum.element.model.ElementDtoMapper;
+import ru.practicum.element.model.ElementProjectionMapper;
 import ru.practicum.ewm.model.category.Category;
 
 @Component
-public class NewCategoryDtoMapper extends ElementDtoMapper<Category, NewCategoryDto> {
+public class NewCategoryDtoMapper extends ElementProjectionMapper<Category, NewCategoryDto> {
     public NewCategoryDtoMapper() {
         super(
                 NewCategoryDto.class,
@@ -16,7 +16,7 @@ public class NewCategoryDtoMapper extends ElementDtoMapper<Category, NewCategory
     }
 
     @Override
-    public NewCategoryDto toDto(Category category) {
+    public NewCategoryDto toProjection(Category category) {
         return category == null ? null : new NewCategoryDto(
                 category.getName()
         );

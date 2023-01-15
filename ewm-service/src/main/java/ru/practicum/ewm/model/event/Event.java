@@ -2,8 +2,7 @@ package ru.practicum.ewm.model.event;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import ru.practicum.element.model.Element;
+import ru.practicum.element.model.Identifiable;
 import ru.practicum.ewm.model.category.Category;
 import ru.practicum.ewm.model.user.User;
 
@@ -20,14 +19,12 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 
 @Entity
-@ToString
 @Table(name = "events")
 @Getter
 @Setter
-public class Event extends Element {
+public class Event implements Identifiable {
     public static final String ELEMENT_NAME = "Событие";
 
     @Column(name = "annotation", length = 2000, nullable = false)
@@ -83,30 +80,40 @@ public class Event extends Element {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+
+        //сущности с пустым id не равны
+        if (id == null || o == null || getClass() != o.getClass()) {
             return false;
         }
-        Event event = (Event) o;
-        return Objects.equals(this.annotation, event.annotation) &&
-                Objects.equals(this.category, event.category) &&
-                Objects.equals(this.createdOn, event.createdOn) &&
-                Objects.equals(this.description, event.description) &&
-                Objects.equals(this.eventDate, event.eventDate) &&
-                Objects.equals(this.id, event.id) &&
-                Objects.equals(this.initiator, event.initiator) &&
-                Objects.equals(this.location, event.location) &&
-                Objects.equals(this.paid, event.paid) &&
-                Objects.equals(this.participantLimit, event.participantLimit) &&
-                Objects.equals(this.publishedOn, event.publishedOn) &&
-                Objects.equals(this.requestModeration, event.requestModeration) &&
-                Objects.equals(this.state, event.state) &&
-                Objects.equals(this.title, event.title);
+
+        Event other = (Event) o;
+        return id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(annotation, category, createdOn, description, eventDate, id, initiator, location, paid,
-                participantLimit, publishedOn, requestModeration, state, title);
+        //константное значение, что бы hash не изменялся после присвоения id
+        return 13;
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "annotation='" + annotation + '\'' +
+                ", category=" + category +
+                ", createdOn=" + createdOn +
+                ", description='" + description + '\'' +
+                ", eventDate=" + eventDate +
+                ", id=" + id +
+                ", initiator=" + initiator +
+                ", location=" + location +
+                ", paid=" + paid +
+                ", participantLimit=" + participantLimit +
+                ", publishedOn=" + publishedOn +
+                ", requestModeration=" + requestModeration +
+                ", state=" + state +
+                ", title='" + title + '\'' +
+                '}';
     }
 }
 

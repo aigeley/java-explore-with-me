@@ -1,17 +1,16 @@
-package ru.practicum.ewm.model.compilation.projection;
+package ru.practicum.ewm.service.projection;
 
 import lombok.ToString;
 import lombok.Value;
-import ru.practicum.element.model.Element;
+import ru.practicum.element.model.Identifiable;
 import ru.practicum.ewm.model.compilation.Compilation;
-import ru.practicum.ewm.model.event.projection.EventWithViews;
 
 import java.util.Objects;
 import java.util.Set;
 
 @Value
 @ToString
-public class CompilationWithEventViews extends Element {
+public class CompilationWithEventViews implements Identifiable {
     Compilation compilation;
     Set<EventWithViews> eventsWithViews;
 
@@ -20,7 +19,6 @@ public class CompilationWithEventViews extends Element {
         return compilation.getId();
     }
 
-    @Override
     public void setId(Long id) {
         compilation.setId(id);
     }
@@ -30,16 +28,16 @@ public class CompilationWithEventViews extends Element {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof CompilationWithEventViews)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         CompilationWithEventViews that = (CompilationWithEventViews) o;
-        return compilation.equals(that.compilation) && eventsWithViews.equals(that.eventsWithViews);
+        return Objects.equals(compilation, that.compilation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(compilation, eventsWithViews);
+        return Objects.hash(compilation);
     }
 }
 

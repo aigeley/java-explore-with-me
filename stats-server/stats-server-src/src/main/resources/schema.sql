@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS endpoint_hits;
-DROP SEQUENCE IF EXISTS endpoint_hit_seq;
 CREATE SEQUENCE IF NOT EXISTS endpoint_hit_seq;
 CREATE TABLE IF NOT EXISTS endpoint_hits
 (

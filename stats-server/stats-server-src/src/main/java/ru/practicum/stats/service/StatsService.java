@@ -5,5 +5,5 @@ import ru.practicum.stats.model.ViewStats;
 import java.util.List;
 
 public interface StatsService {
-    List<ViewStats> getStats(String start, String end, List<String> uris, Boolean unique);
+    List<ViewStats> getAll(String start, String end, List<String> uris, Boolean unique);
 }

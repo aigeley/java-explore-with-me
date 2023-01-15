@@ -2,6 +2,7 @@ package ru.practicum.ewm.model.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.ToString;
 import lombok.Value;
 
@@ -17,14 +18,14 @@ public class Location {
     /**
      * Широта
      */
-    @Schema(name = "lat", example = "55.754167", description = "Широта", required = false)
+    @Schema(name = "lat", example = "55.754167", description = "Широта", requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("lat")
     Float lat;
 
     /**
      * Долгота
      */
-    @Schema(name = "lon", example = "37.62", description = "Долгота", required = false)
+    @Schema(name = "lon", example = "37.62", description = "Долгота", requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("lon")
     Float lon;
 

@@ -2,14 +2,14 @@ package ru.practicum.ewm.model.compilation.dto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.stereotype.Component;
-import ru.practicum.element.model.ElementDtoMapper;
-import ru.practicum.ewm.model.compilation.projection.CompilationWithEventViews;
+import ru.practicum.element.model.ElementProjectionMapper;
 import ru.practicum.ewm.model.event.dto.EventShortDtoMapper;
+import ru.practicum.ewm.service.projection.CompilationWithEventViews;
 
 import java.util.stream.Collectors;
 
 @Component
-public class CompilationDtoMapper extends ElementDtoMapper<CompilationWithEventViews, CompilationDto> {
+public class CompilationDtoMapper extends ElementProjectionMapper<CompilationWithEventViews, CompilationDto> {
     private final EventShortDtoMapper eventShortDtoMapper;
 
     public CompilationDtoMapper(EventShortDtoMapper eventShortDtoMapper) {
@@ -22,10 +22,10 @@ public class CompilationDtoMapper extends ElementDtoMapper<CompilationWithEventV
     }
 
     @Override
-    public CompilationDto toDto(CompilationWithEventViews compilationWithEventViews) {
+    public CompilationDto toProjection(CompilationWithEventViews compilationWithEventViews) {
         return compilationWithEventViews == null ? null : new CompilationDto(
                 compilationWithEventViews.getEventsWithViews().stream()
-                        .map(eventShortDtoMapper::toDto)
+                        .map(eventShortDtoMapper::toProjection)
                         .collect(Collectors.toSet()),
                 compilationWithEventViews.getId(),
                 compilationWithEventViews.getCompilation().getPinned(),

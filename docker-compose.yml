@@ -41,5 +41,3 @@ services:
       - POSTGRES_DB=ewm
       - POSTGRES_USER=test
       - POSTGRES_PASSWORD=test
-
-

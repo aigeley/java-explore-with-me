@@ -6,30 +6,32 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.stats.model.ViewStats;
-import ru.practicum.stats.repository.EndpointHitRepositoryCustom;
+import ru.practicum.stats.repository.ViewStatsRepository;
 import ru.practicum.stats.repository.util.QEndpointHitEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.practicum.element.model.Element.DATE_TIME_FORMATTER;
+import static ru.practicum.element.model.ElementProjectionMapper.DATE_TIME_FORMATTER;
 
 @AllArgsConstructor
 @Service
 public class StatsServiceImpl implements StatsService {
-    private final EndpointHitRepositoryCustom endpointHitRepositoryCustom;
+    private final ViewStatsRepository viewStatsRepository;
 
     @Override
-    public List<ViewStats> getStats(String start, String end, List<String> uris, Boolean unique) {
+    public List<ViewStats> getAll(String start, String end, List<String> uris, Boolean unique) {
         List<Predicate> wherePredicates = new ArrayList<>();
 
         if (start != null) {
-            wherePredicates.add(QEndpointHitEntity.endpointHitEntity.timestamp.goe(LocalDateTime.parse(start, DATE_TIME_FORMATTER)));
+            wherePredicates.add(QEndpointHitEntity.endpointHitEntity.timestamp.goe(
+                    LocalDateTime.parse(start, DATE_TIME_FORMATTER)));
         }
 
         if (end != null) {
-            wherePredicates.add(QEndpointHitEntity.endpointHitEntity.timestamp.loe(LocalDateTime.parse(end, DATE_TIME_FORMATTER)));
+            wherePredicates.add(
+                    QEndpointHitEntity.endpointHitEntity.timestamp.loe(LocalDateTime.parse(end, DATE_TIME_FORMATTER)));
         }
 
         if (uris != null && !uris.isEmpty()) {
@@ -45,6 +47,6 @@ public class StatsServiceImpl implements StatsService {
         }
 
         Predicate wherePredicate = ExpressionUtils.allOf(wherePredicates);
-        return endpointHitRepositoryCustom.getStats(wherePredicate, countExpression);
+        return viewStatsRepository.getAll(wherePredicate, countExpression);
     }
 }

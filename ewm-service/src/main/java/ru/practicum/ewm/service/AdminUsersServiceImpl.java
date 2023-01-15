@@ -15,6 +15,7 @@ import ru.practicum.ewm.repository.UserRepository;
 import ru.practicum.ewm.repository.UserRepositoryCustom;
 import ru.practicum.ewm.service.util.UserUtils;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static ru.practicum.ewm.repository.util.QUser.user;
@@ -30,7 +31,7 @@ public class AdminUsersServiceImpl implements AdminUsersService {
     private final UserDtoMapper userDtoMapper;
 
     @Override
-    public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
+    public List<UserDto> getAll(List<Long> ids, Integer from, Integer size) {
         Predicate wherePredicate;
 
         if (ids != null && !ids.isEmpty()) {
@@ -40,20 +41,22 @@ public class AdminUsersServiceImpl implements AdminUsersService {
         }
 
         PageRequestFromElement pageRequest = PageRequestFromElement.of(from, size, new QSort(user.id.asc()));
-        return userDtoMapper.toDtoList(userRepositoryCustom.getUsers(wherePredicate, pageRequest));
+        return userDtoMapper.toProjectionList(userRepositoryCustom.getAll(wherePredicate, pageRequest));
     }
 
     @Override
-    public UserDto registerUser(NewUserRequest newUserRequest) {
+    @Transactional
+    public UserDto register(NewUserRequest newUserRequest) {
         User user = newUserRequestMapper.toElement(new User(), newUserRequest);
         User userRegistered = userRepository.save(user);
         log.info("registerUser: " + userRegistered);
-        return userDtoMapper.toDto(userRegistered);
+        return userDtoMapper.toProjection(userRegistered);
     }
 
     @Override
+    @Transactional
     public void delete(Long userId) {
-        User user = userUtils.getAndCheckElement(userId);
+        User user = userUtils.getAndCheck(userId);
         userRepository.delete(user);
         log.info("delete: " + user);
     }

@@ -1,22 +1,17 @@
 package ru.practicum.stats.api;
 
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.element.api.ElementApiController;
 import ru.practicum.stats.model.EndpointHit;
 import ru.practicum.stats.service.HitService;
 
-import javax.annotation.Generated;
-import javax.servlet.http.HttpServletRequest;
-
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@AllArgsConstructor
 @RestController
-public class HitApiController extends ElementApiController<HitService> implements HitApi {
-    public HitApiController(HitService service, HttpServletRequest request) {
-        super(service, request);
-    }
+public class HitApiController implements HitApi {
+    private final HitService service;
 
     @Override
-    public void hit(EndpointHit endpointHit) {
-        service.hit(endpointHit);
+    public void add(EndpointHit endpointHit) {
+        service.add(endpointHit);
     }
 }

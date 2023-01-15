@@ -25,7 +25,8 @@ public class QCompilation extends EntityPathBase<Compilation> {
 
     public static final QCompilation compilation = new QCompilation("compilation");
 
-    public final SetPath<Event, QEvent> events = this.<Event, QEvent>createSet("events", Event.class, QEvent.class, PathInits.DIRECT2);
+    public final SetPath<Event, QEvent> events =
+            this.<Event, QEvent>createSet("events", Event.class, QEvent.class, PathInits.DIRECT2);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 

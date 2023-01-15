@@ -7,5 +7,5 @@ import ru.practicum.ewm.model.user.User;
 import java.util.List;
 
 public interface UserRepositoryCustom {
-    List<User> getUsers(Predicate wherePredicate, Pageable pageable);
+    List<User> getAll(Predicate wherePredicate, Pageable pageable);
 }

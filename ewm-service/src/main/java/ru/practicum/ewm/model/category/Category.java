@@ -2,8 +2,7 @@ package ru.practicum.ewm.model.category;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import ru.practicum.element.model.Element;
+import ru.practicum.element.model.Identifiable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,14 +10,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.util.Objects;
 
 @Entity
-@ToString
 @Table(name = "categories")
 @Getter
 @Setter
-public class Category extends Element {
+public class Category implements Identifiable {
     public static final String ELEMENT_NAME = "Категория";
 
     @Id
@@ -35,17 +32,28 @@ public class Category extends Element {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+
+        //сущности с пустым id не равны
+        if (id == null || o == null || getClass() != o.getClass()) {
             return false;
         }
-        Category category = (Category) o;
-        return Objects.equals(this.id, category.id) &&
-                Objects.equals(this.name, category.name);
+
+        Category other = (Category) o;
+        return id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        //константное значение, что бы hash не изменялся после присвоения id
+        return 13;
+    }
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
 

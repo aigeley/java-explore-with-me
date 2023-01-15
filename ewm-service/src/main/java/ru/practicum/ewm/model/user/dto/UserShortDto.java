@@ -2,6 +2,7 @@ package ru.practicum.ewm.model.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.ToString;
 import lombok.Value;
 
@@ -19,7 +20,7 @@ public class UserShortDto {
      * Идентификатор
      */
     @NotNull
-    @Schema(name = "id", example = "3", description = "Идентификатор", required = true)
+    @Schema(name = "id", example = "3", description = "Идентификатор", requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("id")
     Long id;
 
@@ -27,7 +28,7 @@ public class UserShortDto {
      * Имя
      */
     @NotNull
-    @Schema(name = "name", example = "Фёдоров Матвей", description = "Имя", required = true)
+    @Schema(name = "name", example = "Фёдоров Матвей", description = "Имя", requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("name")
     String name;
 

@@ -4,12 +4,11 @@ import com.querydsl.jpa.JPQLQuery;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
-import ru.practicum.element.model.Element;
 
 import java.util.Objects;
 
 @Repository
-public abstract class ElementRepositoryAbs<E extends Element> extends QuerydslRepositorySupport {
+public abstract class ElementRepositoryAbs<E> extends QuerydslRepositorySupport {
     protected ElementRepositoryAbs(Class<E> elementClass) {
         super(elementClass);
     }

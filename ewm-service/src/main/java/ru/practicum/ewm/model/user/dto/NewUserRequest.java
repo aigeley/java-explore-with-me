@@ -2,6 +2,7 @@ package ru.practicum.ewm.model.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.ToString;
 import lombok.Value;
 
@@ -21,7 +22,8 @@ public class NewUserRequest {
      */
     @Email
     @NotBlank
-    @Schema(name = "email", example = "ivan.petrov@practicummail.ru", description = "Почтовый адрес", required = true)
+    @Schema(name = "email", example = "ivan.petrov@practicummail.ru", description = "Почтовый адрес",
+            requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("email")
     String email;
 
@@ -29,7 +31,7 @@ public class NewUserRequest {
      * Имя
      */
     @NotBlank
-    @Schema(name = "name", example = "Иван Петров", description = "Имя", required = true)
+    @Schema(name = "name", example = "Иван Петров", description = "Имя", requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("name")
     String name;
 

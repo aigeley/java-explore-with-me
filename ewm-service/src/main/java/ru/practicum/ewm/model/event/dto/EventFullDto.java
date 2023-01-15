@@ -2,6 +2,7 @@ package ru.practicum.ewm.model.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.ToString;
 import lombok.Value;
 import ru.practicum.ewm.model.category.dto.CategoryDto;
@@ -22,12 +23,9 @@ public class EventFullDto {
      * Краткое описание
      */
     @NotNull
-    @Schema(
-            name = "annotation",
+    @Schema(name = "annotation",
             example = "Эксклюзивность нашего шоу гарантирует привлечение максимальной зрительской аудитории",
-            description = "Краткое описание",
-            required = true
-    )
+            description = "Краткое описание", requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("annotation")
     String annotation;
 
@@ -36,45 +34,36 @@ public class EventFullDto {
      */
     @NotNull
     @Valid
-    @Schema(name = "category", required = true)
+    @Schema(name = "category", requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("category")
     CategoryDto category;
 
     /**
      * Количество одобренных заявок на участие в данном событии
      */
-    @Schema(
-            name = "confirmedRequests",
-            example = "5",
+    @Schema(name = "confirmedRequests", example = "5",
             description = "Количество одобренных заявок на участие в данном событии",
-            required = false
-    )
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("confirmedRequests")
     Long confirmedRequests;
 
     /**
      * Дата и время создания события (в формате \"yyyy-MM-dd HH:mm:ss\")
      */
-    @Schema(
-            name = "createdOn",
-            example = "2022-09-06 11:00:23",
+    @Schema(name = "createdOn", example = "2022-09-06 11:00:23",
             description = "Дата и время создания события (в формате \"yyyy-MM-dd HH:mm:ss\")",
-            required = false
-    )
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("createdOn")
     String createdOn;
 
     /**
      * Полное описание события
      */
-    @Schema(
-            name = "description",
+    @Schema(name = "description",
             example = "Что получится, если соединить кукурузу и полёт? Создатели \"Шоу летающей кукурузы\" " +
                     "испытали эту идею на практике и воплотили в жизнь инновационный проект, " +
-                    "предлагающий свежий взгляд на развлечения...",
-            description = "Полное описание события",
-            required = false
-    )
+                    "предлагающий свежий взгляд на развлечения...", description = "Полное описание события",
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("description")
     String description;
 
@@ -82,19 +71,16 @@ public class EventFullDto {
      * Дата и время на которые намечено событие (в формате \"yyyy-MM-dd HH:mm:ss\")
      */
     @NotNull
-    @Schema(
-            name = "eventDate",
-            example = "2024-12-31 15:10:05",
+    @Schema(name = "eventDate", example = "2024-12-31 15:10:05",
             description = "Дата и время на которые намечено событие (в формате \"yyyy-MM-dd HH:mm:ss\")",
-            required = true
-    )
+            requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("eventDate")
     String eventDate;
 
     /**
      * Идентификатор
      */
-    @Schema(name = "id", example = "1", description = "Идентификатор", required = false)
+    @Schema(name = "id", example = "1", description = "Идентификатор", requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("id")
     Long id;
 
@@ -103,7 +89,7 @@ public class EventFullDto {
      */
     @NotNull
     @Valid
-    @Schema(name = "initiator", required = true)
+    @Schema(name = "initiator", requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("initiator")
     UserShortDto initiator;
 
@@ -112,7 +98,7 @@ public class EventFullDto {
      */
     @NotNull
     @Valid
-    @Schema(name = "location", required = true)
+    @Schema(name = "location", requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("location")
     Location location;
 
@@ -120,31 +106,26 @@ public class EventFullDto {
      * Нужно ли оплачивать участие
      */
     @NotNull
-    @Schema(name = "paid", example = "true", description = "Нужно ли оплачивать участие", required = true)
+    @Schema(name = "paid", example = "true", description = "Нужно ли оплачивать участие",
+            requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("paid")
     Boolean paid;
 
     /**
      * Ограничение на количество участников. Значение 0 - означает отсутствие ограничения
      */
-    @Schema(
-            name = "participantLimit",
-            example = "10",
+    @Schema(name = "participantLimit", example = "10",
             description = "Ограничение на количество участников. Значение 0 - означает отсутствие ограничения",
-            required = false
-    )
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("participantLimit")
     Integer participantLimit;
 
     /**
      * Дата и время публикации события (в формате \"yyyy-MM-dd HH:mm:ss\")
      */
-    @Schema(
-            name = "publishedOn",
-            example = "2022-09-06 15:10:05",
+    @Schema(name = "publishedOn", example = "2022-09-06 15:10:05",
             description = "Дата и время публикации события (в формате \"yyyy-MM-dd HH:mm:ss\")",
-            required = false
-    )
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("publishedOn")
     String publishedOn;
 
@@ -152,7 +133,7 @@ public class EventFullDto {
      * Нужна ли пре-модерация заявок на участие
      */
     @Schema(name = "requestModeration", example = "true", description = "Нужна ли пре-модерация заявок на участие",
-            required = false)
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("requestModeration")
     Boolean requestModeration;
 
@@ -160,7 +141,7 @@ public class EventFullDto {
      * Список состояний жизненного цикла события
      */
     @Schema(name = "state", example = "PUBLISHED", description = "Список состояний жизненного цикла события",
-            required = false)
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("state")
     StateEnum state;
 
@@ -168,14 +149,16 @@ public class EventFullDto {
      * Заголовок
      */
     @NotNull
-    @Schema(name = "title", example = "Знаменитое шоу 'Летающая кукуруза'", description = "Заголовок", required = true)
+    @Schema(name = "title", example = "Знаменитое шоу 'Летающая кукуруза'", description = "Заголовок",
+            requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("title")
     String title;
 
     /**
      * Количество просмотрев события
      */
-    @Schema(name = "views", example = "999", description = "Количество просмотрев события", required = false)
+    @Schema(name = "views", example = "999", description = "Количество просмотрев события",
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("views")
     Long views;
 

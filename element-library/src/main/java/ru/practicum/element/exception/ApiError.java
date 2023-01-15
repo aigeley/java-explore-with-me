@@ -37,7 +37,8 @@ public class ApiError {
     /**
      * Общее описание причины ошибки
      */
-    @Schema(name = "reason", example = "For the requested operation the conditions are not met.", description = "Общее описание причины ошибки", required = false)
+    @Schema(name = "reason", example = "For the requested operation the conditions are not met.",
+            description = "Общее описание причины ошибки", required = false)
     @JsonProperty("reason")
     String reason;
 
@@ -51,7 +52,8 @@ public class ApiError {
     /**
      * Дата и время когда произошла ошибка (в формате \"yyyy-MM-dd HH:mm:ss\")
      */
-    @Schema(name = "timestamp", example = "2022-06-09 06:27:23", description = "Дата и время когда произошла ошибка (в формате \"yyyy-MM-dd HH:mm:ss\")", required = false)
+    @Schema(name = "timestamp", example = "2022-06-09 06:27:23",
+            description = "Дата и время когда произошла ошибка (в формате \"yyyy-MM-dd HH:mm:ss\")", required = false)
     @JsonProperty("timestamp")
     String timestamp;
 

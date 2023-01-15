@@ -7,24 +7,26 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import ru.practicum.element.repository.ElementRepositoryAbs;
 import ru.practicum.ewm.model.event.Event;
-import ru.practicum.ewm.model.event.projection.EventWithRequests;
 import ru.practicum.ewm.model.participation.StatusEnum;
 import ru.practicum.ewm.repository.util.QEvent;
 import ru.practicum.ewm.repository.util.QParticipationRequest;
+import ru.practicum.ewm.service.projection.EventWithRequests;
 
 import java.util.List;
 
 @Repository
-public class EventRepositoryCustomImpl extends ElementRepositoryAbs<Event> implements EventRepositoryCustom {
-    public EventRepositoryCustomImpl() {
+public class EventWithRequestsRepositoryImpl extends ElementRepositoryAbs<Event>
+        implements EventWithRequestsRepository {
+    public EventWithRequestsRepositoryImpl() {
         super(Event.class);
     }
 
     @Override
-    public List<EventWithRequests> getEventWithRequestsList(Predicate wherePredicate, Predicate havingPredicate,
-                                                            Pageable pageable) {
+    public List<EventWithRequests> getAll(Predicate wherePredicate, Predicate havingPredicate,
+                                          Pageable pageable) {
         JPQLQuery<EventWithRequests> query = from(QEvent.event)
-                .select(Projections.constructor(EventWithRequests.class, QEvent.event, QParticipationRequest.participationRequest.count()))
+                .select(Projections.constructor(EventWithRequests.class, QEvent.event,
+                        QParticipationRequest.participationRequest.count()))
                 .where(wherePredicate)
                 .leftJoin(QParticipationRequest.participationRequest)
                 .on(

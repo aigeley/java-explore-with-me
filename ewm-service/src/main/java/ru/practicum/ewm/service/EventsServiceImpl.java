@@ -7,12 +7,15 @@ import org.springframework.data.querydsl.QSort;
 import org.springframework.stereotype.Service;
 import ru.practicum.element.model.PageRequestFromElement;
 import ru.practicum.ewm.model.event.SortEnum;
+import ru.practicum.ewm.model.event.StateEnum;
 import ru.practicum.ewm.model.event.dto.EventFullDto;
 import ru.practicum.ewm.model.event.dto.EventFullDtoMapper;
 import ru.practicum.ewm.model.event.dto.EventShortDto;
 import ru.practicum.ewm.model.event.dto.EventShortDtoMapper;
-import ru.practicum.ewm.model.event.projection.EventWithViews;
-import ru.practicum.ewm.repository.EventRepositoryCustom;
+import ru.practicum.ewm.repository.EventWithRequestsRepository;
+import ru.practicum.ewm.service.projection.EventWithRequests;
+import ru.practicum.ewm.service.projection.EventWithViews;
+import ru.practicum.ewm.service.projection.EventWithViewsMapper;
 import ru.practicum.ewm.service.util.EventUtils;
 
 import java.time.LocalDateTime;
@@ -21,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static ru.practicum.element.model.Element.DATE_TIME_FORMATTER;
+import static ru.practicum.element.model.ElementProjectionMapper.DATE_TIME_FORMATTER;
 import static ru.practicum.ewm.repository.util.QEvent.event;
 import static ru.practicum.ewm.repository.util.QParticipationRequest.participationRequest;
 
@@ -29,15 +32,17 @@ import static ru.practicum.ewm.repository.util.QParticipationRequest.participati
 @Service
 public class EventsServiceImpl implements EventsService {
     private final EventUtils eventUtils;
-    private final EventRepositoryCustom eventRepositoryCustom;
+    private final EventWithRequestsRepository eventWithRequestsRepository;
     private final EventFullDtoMapper eventFullDtoMapper;
     private final EventShortDtoMapper eventShortDtoMapper;
+    private final EventWithViewsMapper eventWithViewsMapper;
 
     @Override
-    public List<EventShortDto> getEvents_1(String text, List<Long> categories, Boolean paid, String rangeStart,
-                                           String rangeEnd, Boolean onlyAvailable, SortEnum sort, Integer from,
-                                           Integer size, String ip) {
+    public List<EventShortDto> getAll(String text, List<Long> categories, Boolean paid, String rangeStart,
+                                      String rangeEnd, Boolean onlyAvailable, SortEnum sort, Integer from,
+                                      Integer size, String ip) {
         List<Predicate> wherePredicates = new ArrayList<>();
+        wherePredicates.add(event.state.eq(StateEnum.PUBLISHED));
 
         if (text != null && !text.isBlank()) {
             wherePredicates.add(ExpressionUtils.anyOf(
@@ -89,22 +94,27 @@ public class EventsServiceImpl implements EventsService {
         }
 
         PageRequestFromElement pageRequest = PageRequestFromElement.of(from, size, qSort);
-        List<EventWithViews> eventWithViews =
-                eventUtils.getEventWithViewsListByPredicate(wherePredicate, havingPredicate, pageRequest);
+        List<EventWithRequests> eventWithRequestsList =
+                eventWithRequestsRepository.getAll(wherePredicate, havingPredicate, pageRequest);
+        List<EventWithViews> eventWithViewsList = eventWithViewsMapper.toProjectionList(eventWithRequestsList);
 
         if (sort == SortEnum.VIEWS) {
-            eventWithViews.sort(Comparator.comparingLong(EventWithViews::getViews));
+            eventWithViewsList.sort(Comparator.comparingLong(EventWithViews::getViews));
         }
 
         eventUtils.hit("/events", ip);
-        return eventShortDtoMapper.toDtoList(eventWithViews);
+        return eventShortDtoMapper.toProjectionList(eventWithViewsList);
     }
 
     @Override
-    public EventFullDto getEvent_1(Long id, String ip) {
-        Predicate wherePredicate = event.id.eq(id);
-        EventWithViews event = eventUtils.getEventWithViewsByPredicate(wherePredicate);
+    public EventFullDto get(Long id, String ip) {
+        Predicate wherePredicate = ExpressionUtils.allOf(
+                event.id.eq(id),
+                event.state.eq(StateEnum.PUBLISHED)
+        );
+        EventWithRequests eventWithRequests = eventUtils.getEventWithRequests(wherePredicate);
         eventUtils.hit("/events/" + id, ip);
-        return eventFullDtoMapper.toDto(event);
+        return eventFullDtoMapper.toProjection(
+                eventWithViewsMapper.toProjection(eventWithRequests));
     }
 }

@@ -21,13 +21,13 @@ public class CategoriesServiceImpl implements CategoriesService {
     private final CategoryUtils categoryUtils;
 
     @Override
-    public List<CategoryDto> getCategories(Integer from, Integer size) {
+    public List<CategoryDto> getAll(Integer from, Integer size) {
         PageRequestFromElement pageRequest = PageRequestFromElement.of(from, size, new QSort(category.id.asc()));
-        return categoryDtoMapper.toDtoList(categoryRepository.findAll(pageRequest).toList());
+        return categoryDtoMapper.toProjectionList(categoryRepository.findAll(pageRequest).toList());
     }
 
     @Override
-    public CategoryDto getCategory(Long catId) {
-        return categoryDtoMapper.toDto(categoryUtils.getAndCheckElement(catId));
+    public CategoryDto get(Long catId) {
+        return categoryDtoMapper.toProjection(categoryUtils.getAndCheck(catId));
     }
 }

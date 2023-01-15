@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.querydsl.QSort;
 import org.springframework.stereotype.Service;
 import ru.practicum.element.model.PageRequestFromElement;
+import ru.practicum.ewm.exception.event.EventCheck;
 import ru.practicum.ewm.model.category.Category;
 import ru.practicum.ewm.model.event.Event;
 import ru.practicum.ewm.model.event.StateEnum;
@@ -17,20 +18,18 @@ import ru.practicum.ewm.model.event.dto.NewEventDto;
 import ru.practicum.ewm.model.event.dto.NewEventDtoMapper;
 import ru.practicum.ewm.model.event.dto.UpdateEventRequest;
 import ru.practicum.ewm.model.event.dto.UpdateEventRequestMapper;
-import ru.practicum.ewm.model.event.projection.EventWithRequests;
-import ru.practicum.ewm.model.participation.ParticipationRequest;
-import ru.practicum.ewm.model.participation.StatusEnum;
-import ru.practicum.ewm.model.participation.dto.ParticipationRequestDto;
-import ru.practicum.ewm.model.participation.dto.ParticipationRequestDtoMapper;
 import ru.practicum.ewm.model.user.User;
 import ru.practicum.ewm.repository.EventRepository;
-import ru.practicum.ewm.repository.EventRepositoryCustom;
-import ru.practicum.ewm.repository.ParticipationRequestRepository;
+import ru.practicum.ewm.repository.EventWithRequestsRepository;
+import ru.practicum.ewm.service.projection.EventWithRequests;
+import ru.practicum.ewm.service.projection.EventWithRequestsMapper;
+import ru.practicum.ewm.service.projection.EventWithViewsMapper;
 import ru.practicum.ewm.service.util.CategoryUtils;
 import ru.practicum.ewm.service.util.EventUtils;
 import ru.practicum.ewm.service.util.ParticipationRequestUtils;
 import ru.practicum.ewm.service.util.UserUtils;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static ru.practicum.ewm.repository.util.QEvent.event;
@@ -40,106 +39,82 @@ import static ru.practicum.ewm.repository.util.QEvent.event;
 @Service
 public class UsersEventsServiceImpl implements UsersEventsService {
     private final EventRepository eventRepository;
-    private final EventRepositoryCustom eventRepositoryCustom;
+    private final EventWithRequestsRepository eventWithRequestsRepository;
     private final EventUtils eventUtils;
     private final NewEventDtoMapper newEventDtoMapper;
     private final EventFullDtoMapper eventFullDtoMapper;
     private final EventShortDtoMapper eventShortDtoMapper;
     private final UpdateEventRequestMapper updateEventRequestMapper;
+    private final EventWithViewsMapper eventWithViewsMapper;
+    private final EventWithRequestsMapper eventWithRequestsMapper;
     private final UserUtils userUtils;
     private final CategoryUtils categoryUtils;
-    private final ParticipationRequestRepository participationRequestRepository;
-    private final ParticipationRequestDtoMapper participationRequestDtoMapper;
     private final ParticipationRequestUtils participationRequestUtils;
 
     @Override
-    public List<EventShortDto> getEvents(Long userId, Integer from, Integer size) {
+    public List<EventShortDto> getAll(Long userId, Integer from, Integer size) {
         Predicate wherePredicate = event.initiator.id.eq(userId);
         PageRequestFromElement pageRequest = PageRequestFromElement.of(from, size, new QSort(event.id.asc()));
-        List<EventWithRequests> eventsWithRequests = eventRepositoryCustom.getEventWithRequestsList(wherePredicate,
+        List<EventWithRequests> eventsWithRequests = eventWithRequestsRepository.getAll(wherePredicate,
                 null, pageRequest);
-        return eventShortDtoMapper.toDtoList(eventUtils.getEventWithViewsList(eventsWithRequests));
+        return eventShortDtoMapper.toProjectionList(eventUtils.getEventWithViewsList(eventsWithRequests));
     }
 
     @Override
-    public EventFullDto updateEvent_1(Long userId, UpdateEventRequest updateEventRequest) {
-        User initiator = userUtils.getAndCheckElement(userId);
-        Event event = eventUtils.getAndCheckElement(updateEventRequest.getEventId());
-        eventUtils.checkEventBelongsToUser(event, initiator.getId());
-        eventUtils.checkEventCouldBeUpdatedByUser(event);
+    @Transactional
+    public EventFullDto update(Long userId, UpdateEventRequest updateEventRequest) {
+        User initiator = userUtils.getAndCheck(userId);
+        Event event = eventUtils.getAndCheck(updateEventRequest.getEventId());
+        EventCheck.belongsToUser(event, initiator.getId());
+        EventCheck.couldBeUpdatedByUser(event);
         Event eventToUpdate = updateEventRequestMapper.toElement(event, updateEventRequest);
         eventToUpdate.setState(StateEnum.PENDING);
+        eventUtils.setNewCategory(eventToUpdate, event.getCategory().getId(), updateEventRequest.getCategory());
         Event eventUpdated = eventRepository.save(eventToUpdate);
         log.info("updateEvent_1: " + eventUpdated);
-        return eventFullDtoMapper.toDto(eventUtils.toEventWithViews(eventUpdated));
+        return eventFullDtoMapper.toProjection(
+                eventWithViewsMapper.toProjection(
+                        eventWithRequestsMapper.toProjection(eventUpdated)));
     }
 
     @Override
-    public EventFullDto addEvent(Long userId, NewEventDto newEventDto) {
-        User initiator = userUtils.getAndCheckElement(userId);
-        Category category = categoryUtils.getAndCheckElement(newEventDto.getCategory());
+    @Transactional
+    public EventFullDto add(Long userId, NewEventDto newEventDto) {
+        User initiator = userUtils.getAndCheck(userId);
+        Category category = categoryUtils.getAndCheck(newEventDto.getCategory());
         Event event = new Event();
         event.setInitiator(initiator);
         event.setCategory(category);
         Event eventToAdd = newEventDtoMapper.toElement(event, newEventDto);
         Event eventAdded = eventRepository.save(eventToAdd);
         log.info("addEvent: " + eventAdded);
-        return eventFullDtoMapper.toDto(eventUtils.toEventWithViews(eventAdded));
+        return eventFullDtoMapper.toProjection(
+                eventWithViewsMapper.toProjection(
+                        eventWithRequestsMapper.toProjection(eventAdded)));
     }
 
     @Override
-    public EventFullDto getEvent(Long userId, Long eventId) {
-        User initiator = userUtils.getAndCheckElement(userId);
-        Event event = eventUtils.getAndCheckElement(eventId);
-        eventUtils.checkEventBelongsToUser(event, initiator.getId());
-        return eventFullDtoMapper.toDto(eventUtils.toEventWithViews(event));
+    public EventFullDto get(Long userId, Long eventId) {
+        User initiator = userUtils.getAndCheck(userId);
+        Event event = eventUtils.getAndCheck(eventId);
+        EventCheck.belongsToUser(event, initiator.getId());
+        return eventFullDtoMapper.toProjection(
+                eventWithViewsMapper.toProjection(
+                        eventWithRequestsMapper.toProjection(event)));
     }
 
     @Override
-    public EventFullDto cancelEvent(Long userId, Long eventId) {
-        User initiator = userUtils.getAndCheckElement(userId);
-        Event event = eventUtils.getAndCheckElement(eventId);
-        eventUtils.checkEventBelongsToUser(event, initiator.getId());
-        eventUtils.checkEventCouldBeRejected(event);
+    @Transactional
+    public EventFullDto cancel(Long userId, Long eventId) {
+        User initiator = userUtils.getAndCheck(userId);
+        Event event = eventUtils.getAndCheck(eventId);
+        EventCheck.belongsToUser(event, initiator.getId());
+        EventCheck.couldBeRejected(event);
         event.setState(StateEnum.CANCELED);
         Event eventCancelled = eventRepository.save(event);
         log.info("cancelEvent: " + eventCancelled);
-        return eventFullDtoMapper.toDto(eventUtils.toEventWithViews(eventCancelled));
-    }
-
-    @Override
-    public List<ParticipationRequestDto> getEventParticipants(Long userId, Long eventId) {
-        User initiator = userUtils.getAndCheckElement(userId);
-        Event event = eventUtils.getAndCheckElement(eventId);
-        eventUtils.checkEventBelongsToUser(event, initiator.getId());
-        return participationRequestDtoMapper.toDtoList(
-                participationRequestRepository.findAllByEvent_IdOrderById(eventId));
-    }
-
-    @Override
-    public ParticipationRequestDto confirmParticipationRequest(Long userId, Long eventId, Long reqId) {
-        User initiator = userUtils.getAndCheckElement(userId);
-        Event event = eventUtils.getAndCheckElement(eventId);
-        eventUtils.checkEventBelongsToUser(event, initiator.getId());
-        participationRequestUtils.checkEventParticipantLimitIsZero(event);
-        Long confirmedRequests = participationRequestUtils.getConfirmedRequests(event);
-        participationRequestUtils.checkEventParticipantLimit(event, confirmedRequests);
-        ParticipationRequest participationRequest = participationRequestUtils.getAndCheckElement(reqId);
-        participationRequest.setStatus(StatusEnum.CONFIRMED);
-        ParticipationRequest participationRequestConfirmed = participationRequestRepository.save(participationRequest);
-        log.info("confirmParticipationRequest: " + participationRequestConfirmed);
-        return participationRequestDtoMapper.toDto(participationRequestConfirmed);
-    }
-
-    @Override
-    public ParticipationRequestDto cancelParticipationRequest(Long userId, Long eventId, Long reqId) {
-        User initiator = userUtils.getAndCheckElement(userId);
-        Event event = eventUtils.getAndCheckElement(eventId);
-        eventUtils.checkEventBelongsToUser(event, initiator.getId());
-        ParticipationRequest participationRequest = participationRequestUtils.getAndCheckElement(reqId);
-        participationRequest.setStatus(StatusEnum.REJECTED);
-        ParticipationRequest participationRequestCancelled = participationRequestRepository.save(participationRequest);
-        log.info("cancelParticipationRequest: " + participationRequestCancelled);
-        return participationRequestDtoMapper.toDto(participationRequestCancelled);
+        return eventFullDtoMapper.toProjection(
+                eventWithViewsMapper.toProjection(
+                        eventWithRequestsMapper.toProjection(eventCancelled)));
     }
 }

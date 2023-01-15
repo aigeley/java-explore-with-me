@@ -2,8 +2,7 @@ package ru.practicum.stats.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import ru.practicum.element.model.Element;
+import ru.practicum.element.model.Identifiable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,14 +12,12 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 
 @Entity
-@ToString
 @Table(name = "endpoint_hits")
 @Getter
 @Setter
-public class EndpointHitEntity extends Element {
+public class EndpointHitEntity implements Identifiable {
 
     @Id
     @GeneratedValue(generator = "endpoint_hit_seq")
@@ -28,13 +25,13 @@ public class EndpointHitEntity extends Element {
     @Column(name = "endpoint_hit_id", nullable = false)
     private Long id;
 
-    @Column(name = "app", nullable = false)
+    @Column(name = "app")
     private String app;
 
-    @Column(name = "uri", length = 512, nullable = false)
+    @Column(name = "uri", length = 512)
     private String uri;
 
-    @Column(name = "ip", nullable = false)
+    @Column(name = "ip")
     private String ip;
 
     @Column(name = "endpoint_hit_timestamp", nullable = false)
@@ -45,20 +42,31 @@ public class EndpointHitEntity extends Element {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+
+        //сущности с пустым id не равны
+        if (id == null || o == null || getClass() != o.getClass()) {
             return false;
         }
-        EndpointHitEntity endpointHit = (EndpointHitEntity) o;
-        return Objects.equals(this.id, endpointHit.id) &&
-                Objects.equals(this.app, endpointHit.app) &&
-                Objects.equals(this.uri, endpointHit.uri) &&
-                Objects.equals(this.ip, endpointHit.ip) &&
-                Objects.equals(this.timestamp, endpointHit.timestamp);
+
+        EndpointHitEntity other = (EndpointHitEntity) o;
+        return id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, app, uri, ip, timestamp);
+        //константное значение, что бы hash не изменялся после присвоения id
+        return 13;
+    }
+
+    @Override
+    public String toString() {
+        return "EndpointHitEntity{" +
+                "id=" + id +
+                ", app='" + app + '\'' +
+                ", uri='" + uri + '\'' +
+                ", ip='" + ip + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
     }
 }
 

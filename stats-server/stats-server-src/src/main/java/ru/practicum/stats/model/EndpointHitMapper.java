@@ -2,15 +2,13 @@ package ru.practicum.stats.model;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.stereotype.Component;
-import ru.practicum.element.model.ElementDtoMapper;
+import ru.practicum.element.model.ElementProjectionMapper;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static ru.practicum.element.model.Element.DATE_TIME_FORMATTER;
-
 @Component
-public class EndpointHitMapper extends ElementDtoMapper<EndpointHitEntity, EndpointHit> {
+public class EndpointHitMapper extends ElementProjectionMapper<EndpointHitEntity, EndpointHit> {
     public EndpointHitMapper() {
         super(
                 EndpointHit.class,
@@ -20,7 +18,7 @@ public class EndpointHitMapper extends ElementDtoMapper<EndpointHitEntity, Endpo
     }
 
     @Override
-    public EndpointHit toDto(EndpointHitEntity endpointHitEntity) {
+    public EndpointHit toProjection(EndpointHitEntity endpointHitEntity) {
         return endpointHitEntity == null ? null : new EndpointHit(
                 endpointHitEntity.getId(),
                 endpointHitEntity.getApp(),
@@ -32,9 +30,9 @@ public class EndpointHitMapper extends ElementDtoMapper<EndpointHitEntity, Endpo
 
     @Override
     public EndpointHitEntity toElement(EndpointHitEntity endpointHitEntity, EndpointHit endpointHit) {
-        endpointHitEntity.setApp(endpointHit.getApp());
-        endpointHitEntity.setUri(endpointHit.getUri());
-        endpointHitEntity.setIp(endpointHit.getIp());
+        endpointHitEntity.setApp(getNullIfBlank(endpointHit.getApp()));
+        endpointHitEntity.setUri(getNullIfBlank(endpointHit.getUri()));
+        endpointHitEntity.setIp(getNullIfBlank(endpointHit.getIp()));
         Optional.ofNullable(endpointHit.getTimestamp())
                 .ifPresent(
                         timestamp -> endpointHitEntity.setTimestamp(LocalDateTime.parse(timestamp, DATE_TIME_FORMATTER))

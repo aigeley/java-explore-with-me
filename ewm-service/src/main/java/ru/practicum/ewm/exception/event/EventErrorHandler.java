@@ -18,7 +18,25 @@ public class EventErrorHandler extends ErrorHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> handleEventCouldNotBePublishedException(EventStateIncorrectException e)
+    public ResponseEntity<String> handleEventDateTooLateException(EventDateTooLateException e)
+            throws JsonProcessingException {
+        return sendError(e, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleEventInitiatorIsDifferentException(EventInitiatorIsDifferentException e)
+            throws JsonProcessingException {
+        return sendError(e, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleEventIsNotPublishedException(EventIsNotPublishedException e)
+            throws JsonProcessingException {
+        return sendError(e, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleEventStateIncorrectException(EventStateIncorrectException e)
             throws JsonProcessingException {
         return sendError(e, HttpStatus.FORBIDDEN);
     }

@@ -4,9 +4,9 @@ import ru.practicum.ewm.model.category.dto.CategoryDto;
 import ru.practicum.ewm.model.category.dto.NewCategoryDto;
 
 public interface AdminCategoriesService {
-    CategoryDto updateCategory(CategoryDto categoryDto);
+    CategoryDto update(CategoryDto categoryDto);
 
-    CategoryDto addCategory(NewCategoryDto newCategoryDto);
+    CategoryDto add(NewCategoryDto newCategoryDto);
 
-    void deleteCategory(Long catId);
+    void delete(Long catId);
 }

@@ -7,5 +7,5 @@ import ru.practicum.ewm.model.compilation.Compilation;
 import java.util.List;
 
 public interface CompilationRepositoryCustom {
-    List<Compilation> getCompilations(Predicate wherePredicate, Pageable pageable);
+    List<Compilation> getAll(Predicate wherePredicate, Pageable pageable);
 }

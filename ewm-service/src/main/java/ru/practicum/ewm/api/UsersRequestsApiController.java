@@ -1,33 +1,29 @@
 package ru.practicum.ewm.api;
 
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.element.api.ElementApiController;
 import ru.practicum.ewm.model.participation.dto.ParticipationRequestDto;
 import ru.practicum.ewm.service.UsersRequestsService;
 
-import javax.annotation.Generated;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@AllArgsConstructor
 @RestController
-public class UsersRequestsApiController extends ElementApiController<UsersRequestsService> implements UsersRequestsApi {
-    protected UsersRequestsApiController(UsersRequestsService service, HttpServletRequest request) {
-        super(service, request);
+public class UsersRequestsApiController implements UsersRequestsApi {
+    private final UsersRequestsService service;
+
+    @Override
+    public List<ParticipationRequestDto> getAll(Long userId) {
+        return service.getAll(userId);
     }
 
     @Override
-    public List<ParticipationRequestDto> getUserRequests(Long userId) {
-        return service.getUserRequests(userId);
+    public ParticipationRequestDto add(Long userId, Long eventId) {
+        return service.add(userId, eventId);
     }
 
     @Override
-    public ParticipationRequestDto addParticipationRequest(Long userId, Long eventId) {
-        return service.addParticipationRequest(userId, eventId);
-    }
-
-    @Override
-    public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
-        return service.cancelRequest(userId, requestId);
+    public ParticipationRequestDto cancel(Long userId, Long requestId) {
+        return service.cancel(userId, requestId);
     }
 }

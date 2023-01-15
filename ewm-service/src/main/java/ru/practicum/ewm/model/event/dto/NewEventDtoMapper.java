@@ -2,16 +2,15 @@ package ru.practicum.ewm.model.event.dto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.stereotype.Component;
-import ru.practicum.element.model.ElementDtoMapper;
+import ru.practicum.element.model.ElementProjectionMapper;
 import ru.practicum.ewm.model.event.Event;
 import ru.practicum.ewm.model.event.EventLocation;
 
 import java.time.LocalDateTime;
-
-import static ru.practicum.element.model.Element.DATE_TIME_FORMATTER;
+import java.util.Optional;
 
 @Component
-public class NewEventDtoMapper extends ElementDtoMapper<Event, NewEventDto> {
+public class NewEventDtoMapper extends ElementProjectionMapper<Event, NewEventDto> {
     private final LocationMapper locationMapper;
 
     public NewEventDtoMapper(LocationMapper locationMapper) {
@@ -24,13 +23,13 @@ public class NewEventDtoMapper extends ElementDtoMapper<Event, NewEventDto> {
     }
 
     @Override
-    public NewEventDto toDto(Event event) {
+    public NewEventDto toProjection(Event event) {
         return event == null ? null : new NewEventDto(
                 event.getAnnotation(),
                 event.getCategory().getId(),
                 event.getDescription(),
                 event.getEventDate().format(DATE_TIME_FORMATTER),
-                locationMapper.toDto(event.getLocation()),
+                locationMapper.toProjection(event.getLocation()),
                 event.getPaid(),
                 event.getParticipantLimit(),
                 event.getRequestModeration(),
@@ -44,9 +43,9 @@ public class NewEventDtoMapper extends ElementDtoMapper<Event, NewEventDto> {
         event.setDescription(newEventDto.getDescription());
         event.setEventDate(LocalDateTime.parse(newEventDto.getEventDate(), DATE_TIME_FORMATTER));
         event.setLocation(locationMapper.toElement(new EventLocation(), newEventDto.getLocation()));
-        event.setPaid(newEventDto.getPaid());
-        event.setParticipantLimit(newEventDto.getParticipantLimit());
-        event.setRequestModeration(newEventDto.getRequestModeration());
+        Optional.ofNullable(newEventDto.getPaid()).ifPresent(event::setPaid);
+        Optional.ofNullable(newEventDto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
+        Optional.ofNullable(newEventDto.getRequestModeration()).ifPresent(event::setRequestModeration);
         event.setTitle(newEventDto.getTitle());
         return event;
     }

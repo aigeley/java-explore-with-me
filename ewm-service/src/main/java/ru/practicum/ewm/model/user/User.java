@@ -2,8 +2,7 @@ package ru.practicum.ewm.model.user;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import ru.practicum.element.model.Element;
+import ru.practicum.element.model.Identifiable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,14 +10,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.util.Objects;
 
 @Entity
-@ToString
 @Table(name = "users")
 @Getter
 @Setter
-public class User extends Element {
+public class User implements Identifiable {
     public static final String ELEMENT_NAME = "Пользователь";
 
     @Column(name = "email", length = 512, nullable = false, unique = true)
@@ -38,18 +35,29 @@ public class User extends Element {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+
+        //сущности с пустым id не равны
+        if (id == null || o == null || getClass() != o.getClass()) {
             return false;
         }
-        User user = (User) o;
-        return Objects.equals(this.email, user.email) &&
-                Objects.equals(this.id, user.id) &&
-                Objects.equals(this.name, user.name);
+
+        User other = (User) o;
+        return id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(email, id, name);
+        //константное значение, что бы hash не изменялся после присвоения id
+        return 13;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
 

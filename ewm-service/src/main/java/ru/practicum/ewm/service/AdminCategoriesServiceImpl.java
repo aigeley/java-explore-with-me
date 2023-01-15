@@ -11,8 +11,11 @@ import ru.practicum.ewm.model.category.dto.NewCategoryDtoMapper;
 import ru.practicum.ewm.repository.CategoryRepository;
 import ru.practicum.ewm.service.util.CategoryUtils;
 
+import javax.transaction.Transactional;
+
 @AllArgsConstructor
 @Slf4j
+@Transactional
 @Service
 public class AdminCategoriesServiceImpl implements AdminCategoriesService {
     private final CategoryRepository categoryRepository;
@@ -21,25 +24,25 @@ public class AdminCategoriesServiceImpl implements AdminCategoriesService {
     private final NewCategoryDtoMapper newCategoryDtoMapper;
 
     @Override
-    public CategoryDto updateCategory(CategoryDto categoryDto) {
-        Category category = categoryUtils.getAndCheckElement(categoryDto.getId());
+    public CategoryDto update(CategoryDto categoryDto) {
+        Category category = categoryUtils.getAndCheck(categoryDto.getId());
         Category categoryToUpdate = categoryDtoMapper.toElement(category, categoryDto);
         Category categoryUpdated = categoryRepository.save(categoryToUpdate);
         log.info("updateCategory: " + categoryUpdated);
-        return categoryDtoMapper.toDto(categoryUpdated);
+        return categoryDtoMapper.toProjection(categoryUpdated);
     }
 
     @Override
-    public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
+    public CategoryDto add(NewCategoryDto newCategoryDto) {
         Category category = newCategoryDtoMapper.toElement(new Category(), newCategoryDto);
         Category categoryAdded = categoryRepository.save(category);
         log.info("addCategory: " + categoryAdded);
-        return categoryDtoMapper.toDto(categoryAdded);
+        return categoryDtoMapper.toProjection(categoryAdded);
     }
 
     @Override
-    public void deleteCategory(Long catId) {
-        Category category = categoryUtils.getAndCheckElement(catId);
+    public void delete(Long catId) {
+        Category category = categoryUtils.getAndCheck(catId);
         categoryRepository.delete(category);
         log.info("deleteCategory: " + category);
     }

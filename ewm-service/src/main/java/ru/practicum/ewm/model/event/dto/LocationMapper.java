@@ -2,11 +2,11 @@ package ru.practicum.ewm.model.event.dto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.stereotype.Component;
-import ru.practicum.element.model.ElementDtoMapper;
+import ru.practicum.element.model.ElementProjectionMapper;
 import ru.practicum.ewm.model.event.EventLocation;
 
 @Component
-public class LocationMapper extends ElementDtoMapper<EventLocation, Location> {
+public class LocationMapper extends ElementProjectionMapper<EventLocation, Location> {
     public LocationMapper() {
         super(
                 Location.class,
@@ -16,7 +16,7 @@ public class LocationMapper extends ElementDtoMapper<EventLocation, Location> {
     }
 
     @Override
-    public Location toDto(EventLocation eventLocation) {
+    public Location toProjection(EventLocation eventLocation) {
         return eventLocation == null ? null : new Location(
                 eventLocation.getLat(),
                 eventLocation.getLon()

@@ -1,42 +1,38 @@
 package ru.practicum.ewm.api;
 
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.element.api.ElementApiController;
 import ru.practicum.ewm.model.event.StateEnum;
 import ru.practicum.ewm.model.event.dto.AdminUpdateEventRequest;
 import ru.practicum.ewm.model.event.dto.EventFullDto;
 import ru.practicum.ewm.service.AdminEventsService;
 
-import javax.annotation.Generated;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@AllArgsConstructor
 @RestController
-public class AdminEventsApiController extends ElementApiController<AdminEventsService> implements AdminEventsApi {
-    protected AdminEventsApiController(AdminEventsService service, HttpServletRequest request) {
-        super(service, request);
+public class AdminEventsApiController implements AdminEventsApi {
+    private final AdminEventsService service;
+
+    @Override
+    public List<EventFullDto> getAll(List<Long> users, List<StateEnum> states, List<Long> categories,
+                                     String rangeStart, String rangeEnd, Integer from, Integer size) {
+        return service.getAll(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @Override
-    public List<EventFullDto> getEvents_2(List<Long> users, List<StateEnum> states, List<Long> categories,
-                                          String rangeStart, String rangeEnd, Integer from, Integer size) {
-        return service.getEvents_2(users, states, categories, rangeStart, rangeEnd, from, size);
+    public EventFullDto update(Long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
+        return service.update(eventId, adminUpdateEventRequest);
     }
 
     @Override
-    public EventFullDto updateEvent(Long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
-        return service.updateEvent(eventId, adminUpdateEventRequest);
+    public EventFullDto publish(Long eventId) {
+        return service.publish(eventId);
     }
 
     @Override
-    public EventFullDto publishEvent(Long eventId) {
-        return service.publishEvent(eventId);
-    }
-
-    @Override
-    public EventFullDto rejectEvent(Long eventId) {
-        return service.rejectEvent(eventId);
+    public EventFullDto reject(Long eventId) {
+        return service.reject(eventId);
     }
 }
 

@@ -3,6 +3,7 @@ package ru.practicum.ewm.model.compilation.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.ToString;
 import lombok.Value;
 
@@ -23,7 +24,7 @@ public class NewCompilationDto {
      * Список идентификаторов событий входящих в подборку
      */
     @Schema(name = "events", example = "[1,2,3]", description = "Список идентификаторов событий входящих в подборку",
-            required = false)
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("events")
     @Valid
     @JsonDeserialize(as = LinkedHashSet.class)
@@ -32,16 +33,17 @@ public class NewCompilationDto {
     /**
      * Закреплена ли подборка на главной странице сайта
      */
-    @Schema(name = "pinned", example = "false", description = "Закреплена ли подборка на главной странице сайта",
-            required = false)
-    @JsonProperty(value = "pinned", defaultValue = "false")
+    @Schema(name = "pinned", example = "false", defaultValue = "false",
+            description = "Закреплена ли подборка на главной странице сайта", requiredMode = RequiredMode.NOT_REQUIRED)
+    @JsonProperty(value = "pinned")
     Boolean pinned;
 
     /**
      * Заголовок подборки
      */
     @NotBlank
-    @Schema(name = "title", example = "Летние концерты", description = "Заголовок подборки", required = true)
+    @Schema(name = "title", example = "Летние концерты", description = "Заголовок подборки",
+            requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("title")
     String title;
 

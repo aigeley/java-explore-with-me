@@ -1,25 +1,23 @@
-package ru.practicum.ewm.model.event.projection;
+package ru.practicum.ewm.service.projection;
 
 import lombok.ToString;
 import lombok.Value;
-import ru.practicum.element.model.Element;
+import ru.practicum.element.model.Identifiable;
 import ru.practicum.ewm.model.event.Event;
 
 import java.util.Objects;
 
 @Value
 @ToString
-public class EventWithViews extends Element {
+public class EventWithRequests implements Identifiable {
     Event event;
     Long confirmedRequests;
-    Long views;
 
     @Override
     public Long getId() {
         return event.getId();
     }
 
-    @Override
     public void setId(Long id) {
         event.setId(id);
     }
@@ -29,16 +27,16 @@ public class EventWithViews extends Element {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof EventWithViews)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        EventWithViews that = (EventWithViews) o;
-        return event.equals(that.event) && confirmedRequests.equals(that.confirmedRequests) && views.equals(that.views);
+        EventWithRequests that = (EventWithRequests) o;
+        return Objects.equals(event, that.event);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(event, confirmedRequests, views);
+        return Objects.hash(event);
     }
 }
 

@@ -2,6 +2,7 @@ package ru.practicum.ewm.model.participation.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.ToString;
 import lombok.Value;
 import ru.practicum.ewm.model.participation.StatusEnum;
@@ -19,21 +20,22 @@ public class ParticipationRequestDto {
      * Дата и время создания заявки
      */
     @Schema(name = "created", example = "2022-09-06T21:10:05.432", description = "Дата и время создания заявки",
-            required = false)
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("created")
     String created;
 
     /**
      * Идентификатор события
      */
-    @Schema(name = "event", example = "1", description = "Идентификатор события", required = false)
+    @Schema(name = "event", example = "1", description = "Идентификатор события",
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("event")
     Long event;
 
     /**
      * Идентификатор заявки
      */
-    @Schema(name = "id", example = "3", description = "Идентификатор заявки", required = false)
+    @Schema(name = "id", example = "3", description = "Идентификатор заявки", requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("id")
     Long id;
 
@@ -41,14 +43,15 @@ public class ParticipationRequestDto {
      * Идентификатор пользователя, отправившего заявку
      */
     @Schema(name = "requester", example = "2", description = "Идентификатор пользователя, отправившего заявку",
-            required = false)
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("requester")
     Long requester;
 
     /**
      * Статус заявки
      */
-    @Schema(name = "status", example = "PENDING", description = "Статус заявки", required = false)
+    @Schema(name = "status", example = "PENDING", description = "Статус заявки",
+            requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("status")
     StatusEnum status;
 

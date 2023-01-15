@@ -32,11 +32,13 @@ public class QEvent extends EntityPathBase<Event> {
 
     public final QCategory category;
 
-    public final DateTimePath<java.time.LocalDateTime> createdOn = createDateTime("createdOn", java.time.LocalDateTime.class);
+    public final DateTimePath<java.time.LocalDateTime> createdOn =
+            createDateTime("createdOn", java.time.LocalDateTime.class);
 
     public final StringPath description = createString("description");
 
-    public final DateTimePath<java.time.LocalDateTime> eventDate = createDateTime("eventDate", java.time.LocalDateTime.class);
+    public final DateTimePath<java.time.LocalDateTime> eventDate =
+            createDateTime("eventDate", java.time.LocalDateTime.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -48,7 +50,8 @@ public class QEvent extends EntityPathBase<Event> {
 
     public final NumberPath<Integer> participantLimit = createNumber("participantLimit", Integer.class);
 
-    public final DateTimePath<java.time.LocalDateTime> publishedOn = createDateTime("publishedOn", java.time.LocalDateTime.class);
+    public final DateTimePath<java.time.LocalDateTime> publishedOn =
+            createDateTime("publishedOn", java.time.LocalDateTime.class);
 
     public final BooleanPath requestModeration = createBoolean("requestModeration");
 

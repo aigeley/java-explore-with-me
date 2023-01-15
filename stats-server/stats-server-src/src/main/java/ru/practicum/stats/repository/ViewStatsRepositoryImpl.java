@@ -13,13 +13,13 @@ import java.util.List;
 import static ru.practicum.stats.repository.util.QEndpointHitEntity.endpointHitEntity;
 
 @Repository
-public class EndpointHitRepositoryCustomImpl extends QuerydslRepositorySupport implements EndpointHitRepositoryCustom {
-    public EndpointHitRepositoryCustomImpl() {
+public class ViewStatsRepositoryImpl extends QuerydslRepositorySupport implements ViewStatsRepository {
+    public ViewStatsRepositoryImpl() {
         super(EndpointHitEntity.class);
     }
 
     @Override
-    public List<ViewStats> getStats(Predicate wherePredicate, NumberExpression<Long> countExpression) {
+    public List<ViewStats> getAll(Predicate wherePredicate, NumberExpression<Long> countExpression) {
         return from(endpointHitEntity)
                 .select(Projections.constructor(ViewStats.class, endpointHitEntity.app, endpointHitEntity.uri,
                         countExpression))

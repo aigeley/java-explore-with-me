@@ -3,6 +3,8 @@ package ru.practicum.ewm.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.ewm.exception.event.EventCheck;
+import ru.practicum.ewm.exception.participation.ParticipationRequestCheck;
 import ru.practicum.ewm.model.event.Event;
 import ru.practicum.ewm.model.participation.ParticipationRequest;
 import ru.practicum.ewm.model.participation.StatusEnum;
@@ -14,6 +16,7 @@ import ru.practicum.ewm.service.util.EventUtils;
 import ru.practicum.ewm.service.util.ParticipationRequestUtils;
 import ru.practicum.ewm.service.util.UserUtils;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @AllArgsConstructor
@@ -27,42 +30,52 @@ public class UsersRequestsServiceImpl implements UsersRequestsService {
     private final ParticipationRequestUtils participationRequestUtils;
 
     @Override
-    public List<ParticipationRequestDto> getUserRequests(Long userId) {
-        userUtils.getAndCheckElement(userId);
-        return participationRequestDtoMapper.toDtoList(
+    public List<ParticipationRequestDto> getAll(Long userId) {
+        userUtils.getAndCheck(userId);
+        return participationRequestDtoMapper.toProjectionList(
                 participationRequestRepository.findAllByRequester_IdOrderById(userId));
     }
 
     @Override
-    public ParticipationRequestDto addParticipationRequest(Long userId, Long eventId) {
-        User requester = userUtils.getAndCheckElement(userId);
-        Event event = eventUtils.getAndCheckElement(eventId);
-        participationRequestUtils.checkUserCouldParticipate(event, userId);
-        participationRequestUtils.checkEventIsPublished(event);
-        participationRequestUtils.checkEventParticipantLimitIsZero(event);
-        Long confirmedRequests = participationRequestUtils.getConfirmedRequests(event);
-        participationRequestUtils.checkEventParticipantLimit(event, confirmedRequests);
-        ParticipationRequest participationRequest = new ParticipationRequest();
-        participationRequest.setRequester(requester);
-        participationRequest.setEvent(event);
+    @Transactional
+    public ParticipationRequestDto add(Long userId, Long eventId) {
+        User requester = userUtils.getAndCheck(userId);
+        Event event = eventUtils.getAndCheck(eventId);
+        ParticipationRequestCheck.userCouldParticipate(event, userId);
+        EventCheck.stateIsPublished(event);
+        ParticipationRequest request = new ParticipationRequest();
+        request.setRequester(requester);
+        request.setEvent(event);
+        boolean isLimitCheckNeeded = !(event.getRequestModeration() || event.getParticipantLimit() == 0);
+        Long confirmedRequests;
 
-        if (!event.getRequestModeration()) {
-            participationRequest.setStatus(StatusEnum.CONFIRMED);
+        if (isLimitCheckNeeded) {
+            confirmedRequests = participationRequestUtils.getConfirmedRequests(event.getId());
+            ParticipationRequestCheck.participantLimitIsReached(event, confirmedRequests);
+            request.setStatus(StatusEnum.CONFIRMED);
+        } else {
+            confirmedRequests = 0L;
         }
 
-        ParticipationRequest participationRequestAdded = participationRequestRepository.save(participationRequest);
-        log.info("addParticipationRequest: " + participationRequestAdded);
-        return participationRequestDtoMapper.toDto(participationRequestAdded);
+        ParticipationRequest requestAdded = participationRequestRepository.save(request);
+        log.info("addParticipationRequest: " + requestAdded);
+
+        if (isLimitCheckNeeded && ParticipationRequestCheck.isParticipantLimitReached(event, confirmedRequests + 1L)) {
+            participationRequestUtils.rejectAllPending(event.getId());
+        }
+
+        return participationRequestDtoMapper.toProjection(requestAdded);
     }
 
     @Override
-    public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
-        userUtils.getAndCheckElement(userId);
-        ParticipationRequest participationRequest = participationRequestUtils.getAndCheckElement(requestId);
-        participationRequestUtils.checkRequestBelongsToUser(participationRequest, userId);
+    @Transactional
+    public ParticipationRequestDto cancel(Long userId, Long requestId) {
+        userUtils.getAndCheck(userId);
+        ParticipationRequest participationRequest = participationRequestUtils.getAndCheck(requestId);
+        ParticipationRequestCheck.requestBelongsToUser(participationRequest, userId);
         participationRequest.setStatus(StatusEnum.CANCELED);
         ParticipationRequest participationRequestCancelled = participationRequestRepository.save(participationRequest);
         log.info("cancelRequest: " + participationRequestCancelled);
-        return participationRequestDtoMapper.toDto(participationRequestCancelled);
+        return participationRequestDtoMapper.toProjection(participationRequestCancelled);
     }
 }

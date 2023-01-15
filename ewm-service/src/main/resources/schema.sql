@@ -1,14 +1,3 @@
-DROP TABLE IF EXISTS events_compilations;
-DROP TABLE IF EXISTS compilations;
-DROP SEQUENCE IF EXISTS compilation_seq;
-DROP TABLE IF EXISTS participation_requests;
-DROP SEQUENCE IF EXISTS participation_request_seq;
-DROP TABLE IF EXISTS events;
-DROP SEQUENCE IF EXISTS event_seq;
-DROP TABLE IF EXISTS users;
-DROP SEQUENCE IF EXISTS user_seq;
-DROP TABLE IF EXISTS categories;
-DROP SEQUENCE IF EXISTS category_seq;
 CREATE SEQUENCE IF NOT EXISTS category_seq;
 CREATE TABLE IF NOT EXISTS categories
 (

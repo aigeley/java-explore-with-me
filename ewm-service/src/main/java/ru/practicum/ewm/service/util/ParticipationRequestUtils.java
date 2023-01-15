@@ -4,86 +4,68 @@ import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
 import org.springframework.stereotype.Component;
 import ru.practicum.element.util.ElementUtils;
-import ru.practicum.ewm.exception.participation.EventIsNotPublishedException;
-import ru.practicum.ewm.exception.participation.ParticipationLimitIsReachedException;
-import ru.practicum.ewm.exception.participation.RequestorIsDifferentException;
-import ru.practicum.ewm.exception.participation.UserCouldNotParticipateException;
-import ru.practicum.ewm.model.event.Event;
-import ru.practicum.ewm.model.event.StateEnum;
 import ru.practicum.ewm.model.participation.ParticipationRequest;
 import ru.practicum.ewm.model.participation.StatusEnum;
-import ru.practicum.ewm.model.participation.projection.ParticipationRequestCount;
+import ru.practicum.ewm.repository.ParticipationRequestCountRepository;
 import ru.practicum.ewm.repository.ParticipationRequestRepository;
-import ru.practicum.ewm.repository.ParticipationRequestRepositoryCustom;
+import ru.practicum.ewm.service.projection.ParticipationRequestCount;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static ru.practicum.ewm.repository.util.QParticipationRequest.participationRequest;
 
 @Component
 public class ParticipationRequestUtils extends ElementUtils<ParticipationRequest> {
-    private final ParticipationRequestRepositoryCustom participationRequestRepositoryCustom;
+    private final ParticipationRequestRepository participationRequestRepository;
+    private final ParticipationRequestCountRepository participationRequestCountRepository;
 
     public ParticipationRequestUtils(ParticipationRequestRepository participationRequestRepository,
-                                     ParticipationRequestRepositoryCustom participationRequestRepositoryCustom) {
+                                     ParticipationRequestCountRepository participationRequestCountRepository) {
         super(ParticipationRequest.ELEMENT_NAME, participationRequestRepository);
-        this.participationRequestRepositoryCustom = participationRequestRepositoryCustom;
+        this.participationRequestRepository = participationRequestRepository;
+        this.participationRequestCountRepository = participationRequestCountRepository;
     }
 
     public Predicate requestsAreApprovedAnd(Predicate predicate) {
         return ExpressionUtils.allOf(predicate, participationRequest.status.eq(StatusEnum.CONFIRMED));
     }
 
-    public void checkUserCouldParticipate(Event event, Long userId) {
-        if (event.getInitiator().getId().equals(userId)) {
-            throw new UserCouldNotParticipateException(userId, event.getId());
-        }
-    }
-
-    public void checkEventIsPublished(Event event) {
-        if (event.getState() != StateEnum.PUBLISHED) {
-            throw new EventIsNotPublishedException(event.getId(), event.getState());
-        }
-    }
-
-    public Long getConfirmedRequests(Event event) {
+    public Long getConfirmedRequests(Long eventId) {
         Predicate wherePredicate = requestsAreApprovedAnd(
-                participationRequest.event.id.eq(event.getId()));
+                participationRequest.event.id.eq(eventId));
         List<ParticipationRequestCount> participationRequestCountList =
-                participationRequestRepositoryCustom.getParticipationRequestsCountList(wherePredicate);
+                participationRequestCountRepository.getAll(wherePredicate);
+
         Long confirmedRequests;
 
-        if (participationRequestCountList != null
-                && !participationRequestCountList.isEmpty()
-                && participationRequestCountList.get(0) != null
+        if (participationRequestCountList == null
+                || participationRequestCountList.isEmpty()
+                || participationRequestCountList.get(0) == null
         ) {
-            confirmedRequests = participationRequestCountList.get(0).getConfirmedRequests();
-        } else {
             confirmedRequests = 0L;
+        } else {
+            confirmedRequests = participationRequestCountList.get(0).getConfirmedRequests();
         }
 
         return confirmedRequests;
     }
 
-    public void checkEventParticipantLimit(Event event, Long confirmedRequests) {
-        Integer participantLimit = event.getParticipantLimit();
-
-        if (confirmedRequests.equals(participantLimit.longValue())) {
-            throw new ParticipationLimitIsReachedException(event.getId(), event.getParticipantLimit());
-        }
+    public Map<Long, Long> getConfirmedRequestsMap(List<Long> eventIds) {
+        Predicate wherePredicate = requestsAreApprovedAnd(
+                participationRequest.event.id.in(eventIds));
+        return participationRequestCountRepository.getAll(wherePredicate)
+                .stream()
+                .collect(Collectors.toMap(ParticipationRequestCount::getEvent,
+                        ParticipationRequestCount::getConfirmedRequests));
     }
 
-    public void checkEventParticipantLimitIsZero(Event event) {
-        Integer participantLimit = event.getParticipantLimit();
-
-        if (participantLimit == 0) {
-            throw new ParticipationLimitIsReachedException(event.getId(), event.getParticipantLimit());
-        }
+    public void confirmAllPending(Long eventId) {
+        participationRequestRepository.updateStatus(eventId, StatusEnum.PENDING, StatusEnum.CONFIRMED);
     }
 
-    public void checkRequestBelongsToUser(ParticipationRequest participationRequest, Long userId) {
-        if (!participationRequest.getRequester().getId().equals(userId)) {
-            throw new RequestorIsDifferentException(participationRequest.getId(), userId);
-        }
+    public void rejectAllPending(Long eventId) {
+        participationRequestRepository.updateStatus(eventId, StatusEnum.PENDING, StatusEnum.REJECTED);
     }
 }

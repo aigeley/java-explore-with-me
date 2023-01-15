@@ -6,6 +6,6 @@ import ru.practicum.stats.model.ViewStats;
 
 import java.util.List;
 
-public interface EndpointHitRepositoryCustom {
-    List<ViewStats> getStats(Predicate wherePredicate, NumberExpression<Long> countExpression);
+public interface ViewStatsRepository {
+    List<ViewStats> getAll(Predicate wherePredicate, NumberExpression<Long> countExpression);
 }

@@ -2,15 +2,13 @@ package ru.practicum.ewm.model.event.dto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.stereotype.Component;
-import ru.practicum.element.model.ElementDtoMapper;
+import ru.practicum.element.model.ElementProjectionMapper;
 import ru.practicum.ewm.model.category.dto.CategoryDtoMapper;
-import ru.practicum.ewm.model.event.projection.EventWithViews;
 import ru.practicum.ewm.model.user.dto.UserShortDtoMapper;
-
-import static ru.practicum.element.model.Element.DATE_TIME_FORMATTER;
+import ru.practicum.ewm.service.projection.EventWithViews;
 
 @Component
-public class EventShortDtoMapper extends ElementDtoMapper<EventWithViews, EventShortDto> {
+public class EventShortDtoMapper extends ElementProjectionMapper<EventWithViews, EventShortDto> {
     private final CategoryDtoMapper categoryDtoMapper;
     private final UserShortDtoMapper userShortDtoMapper;
 
@@ -25,14 +23,14 @@ public class EventShortDtoMapper extends ElementDtoMapper<EventWithViews, EventS
     }
 
     @Override
-    public EventShortDto toDto(EventWithViews eventWithViews) {
+    public EventShortDto toProjection(EventWithViews eventWithViews) {
         return eventWithViews == null ? null : new EventShortDto(
                 eventWithViews.getEvent().getAnnotation(),
-                categoryDtoMapper.toDto(eventWithViews.getEvent().getCategory()),
+                categoryDtoMapper.toProjection(eventWithViews.getEvent().getCategory()),
                 eventWithViews.getConfirmedRequests(),
                 eventWithViews.getEvent().getEventDate().format(DATE_TIME_FORMATTER),
                 eventWithViews.getId(),
-                userShortDtoMapper.toDto(eventWithViews.getEvent().getInitiator()),
+                userShortDtoMapper.toProjection(eventWithViews.getEvent().getInitiator()),
                 eventWithViews.getEvent().getPaid(),
                 eventWithViews.getEvent().getTitle(),
                 eventWithViews.getViews()

@@ -2,12 +2,15 @@ package ru.practicum.ewm.model.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.ToString;
 import lombok.Value;
+import ru.practicum.ewm.model.event.dto.validation.EventDate;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
@@ -23,12 +26,8 @@ public class NewEventDto {
      */
     @NotBlank
     @Size(min = 20, max = 2000)
-    @Schema(
-            name = "annotation",
-            example = "Сплав на байдарках похож на полет.",
-            description = "Краткое описание события",
-            required = true
-    )
+    @Schema(name = "annotation", example = "Сплав на байдарках похож на полет.",
+            description = "Краткое описание события", requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("annotation")
     String annotation;
 
@@ -36,7 +35,8 @@ public class NewEventDto {
      * id категории к которой относится событие
      */
     @NotNull
-    @Schema(name = "category", example = "2", description = "id категории к которой относится событие", required = true)
+    @Schema(name = "category", example = "2", description = "id категории к которой относится событие",
+            requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("category")
     Long category;
 
@@ -45,14 +45,10 @@ public class NewEventDto {
      */
     @NotBlank
     @Size(min = 20, max = 7000)
-    @Schema(
-            name = "description",
-            example = "Сплав на байдарках похож на полет. На спокойной воде — это парение. " +
-                    "На бурной, порожистой — выполнение фигур высшего пилотажа. " +
-                    "И то, и другое дарят чувство обновления, феерические эмоции, яркие впечатления.",
-            description = "Полное описание события",
-            required = true
-    )
+    @Schema(name = "description", example = "Сплав на байдарках похож на полет. На спокойной воде — это парение. " +
+            "На бурной, порожистой — выполнение фигур высшего пилотажа. " +
+            "И то, и другое дарят чувство обновления, феерические эмоции, яркие впечатления.",
+            description = "Полное описание события", requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("description")
     String description;
 
@@ -60,13 +56,10 @@ public class NewEventDto {
      * Дата и время на которые намечено событие. Дата и время указываются в формате \"yyyy-MM-dd HH:mm:ss\"
      */
     @NotNull
-    @Schema(
-            name = "eventDate",
-            example = "2024-12-31 15:10:05",
+    @EventDate
+    @Schema(name = "eventDate", example = "2024-12-31 15:10:05",
             description = "Дата и время на которые намечено событие. " +
-                    "Дата и время указываются в формате \"yyyy-MM-dd HH:mm:ss\"",
-            required = true
-    )
+                    "Дата и время указываются в формате \"yyyy-MM-dd HH:mm:ss\"", requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("eventDate")
     String eventDate;
 
@@ -75,27 +68,26 @@ public class NewEventDto {
      */
     @NotNull
     @Valid
-    @Schema(name = "location", required = true)
+    @Schema(name = "location", requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("location")
     Location location;
 
     /**
      * Нужно ли оплачивать участие в событии
      */
-    @Schema(name = "paid", example = "true", description = "Нужно ли оплачивать участие в событии", required = false)
-    @JsonProperty(value = "paid", defaultValue = "false")
+    @Schema(name = "paid", example = "true", defaultValue = "false",
+            description = "Нужно ли оплачивать участие в событии", requiredMode = RequiredMode.NOT_REQUIRED)
+    @JsonProperty(value = "paid")
     Boolean paid;
 
     /**
      * Ограничение на количество участников. Значение 0 - означает отсутствие ограничения
      */
-    @Schema(
-            name = "participantLimit",
-            example = "10",
+    @PositiveOrZero
+    @Schema(name = "participantLimit", example = "10", defaultValue = "0",
             description = "Ограничение на количество участников. Значение 0 - означает отсутствие ограничения",
-            required = false
-    )
-    @JsonProperty(value = "participantLimit", defaultValue = "0")
+            requiredMode = RequiredMode.NOT_REQUIRED)
+    @JsonProperty(value = "participantLimit")
     Integer participantLimit;
 
     /**
@@ -103,15 +95,11 @@ public class NewEventDto {
      * Если true, то все заявки будут ожидать подтверждения инициатором события.
      * Если false - то будут подтверждаться автоматически.
      */
-    @Schema(
-            name = "requestModeration",
-            example = "false",
+    @Schema(name = "requestModeration", example = "false", defaultValue = "true",
             description = "Нужна ли пре-модерация заявок на участие. " +
                     "Если true, то все заявки будут ожидать подтверждения инициатором события. " +
-                    "Если false - то будут подтверждаться автоматически.",
-            required = false
-    )
-    @JsonProperty(value = "requestModeration", defaultValue = "true")
+                    "Если false - то будут подтверждаться автоматически.", requiredMode = RequiredMode.NOT_REQUIRED)
+    @JsonProperty(value = "requestModeration")
     Boolean requestModeration;
 
     /**
@@ -119,7 +107,8 @@ public class NewEventDto {
      */
     @NotBlank
     @Size(min = 3, max = 120)
-    @Schema(name = "title", example = "Сплав на байдарках", description = "Заголовок события", required = true)
+    @Schema(name = "title", example = "Сплав на байдарках", description = "Заголовок события",
+            requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("title")
     String title;
 

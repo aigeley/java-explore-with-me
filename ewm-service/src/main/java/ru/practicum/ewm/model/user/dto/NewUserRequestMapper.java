@@ -2,11 +2,11 @@ package ru.practicum.ewm.model.user.dto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.stereotype.Component;
-import ru.practicum.element.model.ElementDtoMapper;
+import ru.practicum.element.model.ElementProjectionMapper;
 import ru.practicum.ewm.model.user.User;
 
 @Component
-public class NewUserRequestMapper extends ElementDtoMapper<User, NewUserRequest> {
+public class NewUserRequestMapper extends ElementProjectionMapper<User, NewUserRequest> {
     public NewUserRequestMapper() {
         super(
                 NewUserRequest.class,
@@ -16,7 +16,7 @@ public class NewUserRequestMapper extends ElementDtoMapper<User, NewUserRequest>
     }
 
     @Override
-    public NewUserRequest toDto(User user) {
+    public NewUserRequest toProjection(User user) {
         return user == null ? null : new NewUserRequest(
                 user.getEmail(),
                 user.getName()

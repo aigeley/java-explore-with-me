@@ -1,4 +1,4 @@
-package ru.practicum.ewm.exception.participation;
+package ru.practicum.ewm.exception.event;
 
 import ru.practicum.ewm.model.event.Event;
 import ru.practicum.ewm.model.event.StateEnum;

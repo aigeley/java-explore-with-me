@@ -2,6 +2,7 @@ package ru.practicum.stats.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.ToString;
 import lombok.Value;
 
@@ -16,21 +17,21 @@ public class ViewStats {
     /**
      * Название сервиса
      */
-    @Schema(name = "app", description = "Название сервиса", required = false)
+    @Schema(name = "app", description = "Название сервиса", requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("app")
     String app;
 
     /**
      * URI сервиса
      */
-    @Schema(name = "uri", description = "URI сервиса", required = false)
+    @Schema(name = "uri", description = "URI сервиса", requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("uri")
     String uri;
 
     /**
      * Количество просмотров
      */
-    @Schema(name = "hits", description = "Количество просмотров", required = false)
+    @Schema(name = "hits", description = "Количество просмотров", requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("hits")
     Long hits;
 

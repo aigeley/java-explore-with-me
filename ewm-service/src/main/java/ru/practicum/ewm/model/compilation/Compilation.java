@@ -2,13 +2,11 @@ package ru.practicum.ewm.model.compilation;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import ru.practicum.element.model.Element;
+import ru.practicum.element.model.Identifiable;
 import ru.practicum.ewm.model.event.Event;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -16,18 +14,16 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@ToString
 @Table(name = "compilations")
 @Getter
 @Setter
-public class Compilation extends Element {
+public class Compilation implements Identifiable {
     public static final String ELEMENT_NAME = "Подборка событий";
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "events_compilations",
             joinColumns = @JoinColumn(name = "compilation_id"),
@@ -52,19 +48,29 @@ public class Compilation extends Element {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+
+        //сущности с пустым id не равны
+        if (id == null || o == null || getClass() != o.getClass()) {
             return false;
         }
-        Compilation compilationDto = (Compilation) o;
-        return Objects.equals(this.events, compilationDto.events) &&
-                Objects.equals(this.id, compilationDto.id) &&
-                Objects.equals(this.pinned, compilationDto.pinned) &&
-                Objects.equals(this.title, compilationDto.title);
+
+        Compilation other = (Compilation) o;
+        return id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(events, id, pinned, title);
+        //константное значение, что бы hash не изменялся после присвоения id
+        return 13;
+    }
+
+    @Override
+    public String toString() {
+        return "Compilation{" +
+                "id=" + id +
+                ", pinned=" + pinned +
+                ", title='" + title + '\'' +
+                '}';
     }
 }
 

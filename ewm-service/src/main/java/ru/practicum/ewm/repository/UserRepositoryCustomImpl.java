@@ -18,7 +18,7 @@ public class UserRepositoryCustomImpl extends ElementRepositoryAbs<User> impleme
     }
 
     @Override
-    public List<User> getUsers(Predicate wherePredicate, Pageable pageable) {
+    public List<User> getAll(Predicate wherePredicate, Pageable pageable) {
         JPQLQuery<User> query = from(user)
                 .select(user)
                 .where(wherePredicate);

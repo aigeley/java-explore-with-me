@@ -2,6 +2,7 @@ package ru.practicum.ewm.model.category.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.ToString;
 import lombok.Value;
 
@@ -19,7 +20,8 @@ public class NewCategoryDto {
      * Название категории
      */
     @NotBlank
-    @Schema(name = "name", example = "Концерты", description = "Название категории", required = true)
+    @Schema(name = "name", example = "Концерты", description = "Название категории",
+            requiredMode = RequiredMode.REQUIRED)
     @JsonProperty("name")
     String name;
 

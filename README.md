@@ -2,7 +2,7 @@
 
 Ссылка на pull-request:
 
-https://github.com/aigeley/java-explore-with-me/pull/2
+https://github.com/aigeley/java-explore-with-me/pull/4
 
 Модель компонентов:
 

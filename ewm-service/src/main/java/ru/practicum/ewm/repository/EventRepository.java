@@ -30,12 +30,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "               LEFT JOIN marks likes\n" +
             "                         ON (\n" +
             "                                     likes.event_id = e.event_id\n" +
-            "                                 AND likes.mark_value = 1\n" +
+            "                                 AND likes.mark_value = true\n" +
             "                             )\n" +
             "               LEFT JOIN marks dislikes\n" +
             "                         ON (\n" +
             "                                     dislikes.event_id = e.event_id\n" +
-            "                                 AND dislikes.mark_value = 0\n" +
+            "                                 AND dislikes.mark_value = false\n" +
             "                             )\n" +
             "               JOIN events e1\n" +
             "                    ON (\n" +

@@ -36,7 +36,7 @@ public class Mark implements Identifiable {
     private Long userId;
 
     @Column(name = "mark_value", nullable = false)
-    private Integer markValue;
+    private Boolean markValue;
 
     @Override
     public boolean equals(Object o) {

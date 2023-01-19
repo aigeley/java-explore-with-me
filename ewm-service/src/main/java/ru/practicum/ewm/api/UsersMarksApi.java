@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.element.exception.ApiError;
 import ru.practicum.ewm.model.mark.dto.MarkDto;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-
 @Validated
 @Tag(name = "Private: Оценки", description = "Закрытый API для работы с оценками")
 @RequestMapping("/users")
@@ -74,11 +71,10 @@ public interface UsersMarksApi {
             @PathVariable("userId") Long userId,
             @Parameter(name = "eventId", description = "id события", required = true)
             @RequestParam("eventId") Long eventId,
-            @Min(0)
-            @Max(1)
-            @Parameter(name = "markValue", example = "1", description = "значение оценки: 1 - лайк, 0 - дизлайк.",
+            @Parameter(name = "markValue", example = "true",
+                    description = "значение оценки: true - лайк, false - дизлайк",
                     required = true)
-            @RequestParam("markValue") Integer markValue
+            @RequestParam("markValue") Boolean markValue
     );
 
     /**

@@ -1,4 +1,4 @@
-package ru.practicum.ewm.service.util;
+package ru.practicum.ewm.repository.http;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;

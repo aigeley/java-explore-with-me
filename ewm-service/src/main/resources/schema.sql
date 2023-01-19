@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS marks
     created    TIMESTAMP DEFAULT CURRENT_TIMESTAMP   NOT NULL,
     event_id   BIGINT                                NOT NULL,
     user_id    BIGINT                                NOT NULL,
-    mark_value INTEGER                               NOT NULL,
+    mark_value BOOLEAN                               NOT NULL,
     CONSTRAINT mark_pk PRIMARY KEY (mark_id),
     CONSTRAINT mark_uq UNIQUE (event_id, user_id),
     CONSTRAINT mark_user_fk FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,

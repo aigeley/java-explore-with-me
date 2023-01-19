@@ -2,6 +2,7 @@ package ru.practicum.ewm.repository.util;
 
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.PathMetadata;
+import com.querydsl.core.types.dsl.BooleanPath;
 import com.querydsl.core.types.dsl.DateTimePath;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.core.types.dsl.NumberPath;
@@ -28,7 +29,7 @@ public class QMark extends EntityPathBase<Mark> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final NumberPath<Integer> markValue = createNumber("markValue", Integer.class);
+    public final BooleanPath markValue = createBoolean("markValue");
 
     public final NumberPath<Long> userId = createNumber("userId", Long.class);
 

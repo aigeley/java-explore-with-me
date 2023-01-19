@@ -48,13 +48,13 @@ public class MarkDto {
 
     /**
      * Значение оценки:
-     * 1 - лайк,
-     * 0 - дизлайк
+     * true - лайк,
+     * false - дизлайк
      */
-    @Schema(name = "markValue", example = "1", description = "Значение оценки: 1 - лайк, 0 - дизлайк",
+    @Schema(name = "markValue", example = "true", description = "Значение оценки: true - лайк, false - дизлайк",
             requiredMode = RequiredMode.NOT_REQUIRED)
     @JsonProperty("markValue")
-    Integer markValue;
+    Boolean markValue;
 
     @Override
     public boolean equals(Object o) {

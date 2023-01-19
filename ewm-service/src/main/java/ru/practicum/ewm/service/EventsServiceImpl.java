@@ -14,10 +14,10 @@ import ru.practicum.ewm.model.event.dto.EventFullDtoMapper;
 import ru.practicum.ewm.model.event.dto.EventShortDto;
 import ru.practicum.ewm.model.event.dto.EventShortDtoMapper;
 import ru.practicum.ewm.repository.EventWithRequestsRepository;
+import ru.practicum.ewm.repository.http.EventWithViewsHttpRepository;
 import ru.practicum.ewm.repository.util.QMark;
 import ru.practicum.ewm.service.projection.EventWithRequests;
 import ru.practicum.ewm.service.projection.EventWithViews;
-import ru.practicum.ewm.service.projection.EventWithViewsMapper;
 import ru.practicum.ewm.service.util.EventUtils;
 
 import java.time.LocalDateTime;
@@ -35,9 +35,9 @@ import static ru.practicum.ewm.repository.util.QParticipationRequest.participati
 public class EventsServiceImpl implements EventsService {
     private final EventUtils eventUtils;
     private final EventWithRequestsRepository eventWithRequestsRepository;
+    private final EventWithViewsHttpRepository eventWithViewsHttpRepository;
     private final EventFullDtoMapper eventFullDtoMapper;
     private final EventShortDtoMapper eventShortDtoMapper;
-    private final EventWithViewsMapper eventWithViewsMapper;
 
     @Override
     public List<EventShortDto> getAll(String text, List<Long> categories, Boolean paid, String rangeStart,
@@ -104,14 +104,14 @@ public class EventsServiceImpl implements EventsService {
         PageRequestFromElement pageRequest = PageRequestFromElement.of(from, size, qSort);
         List<EventWithRequests> eventWithRequestsList =
                 eventWithRequestsRepository.getAll(wherePredicate, havingPredicate, pageRequest);
-        List<EventWithViews> eventWithViewsList = eventWithViewsMapper.toProjectionList(eventWithRequestsList);
+        List<EventWithViews> eventWithViewsList = eventWithViewsHttpRepository.getAll(eventWithRequestsList);
 
         if (sort == SortEnum.VIEWS) {
             //сортировка по числу просмотров, от большего числа к меньшему (только текущей страницы)
             eventWithViewsList.sort(Comparator.comparing(EventWithViews::getViews, Comparator.reverseOrder()));
         }
 
-        eventUtils.hit("/events", ip);
+        eventWithViewsHttpRepository.hit("/events", ip);
         return eventShortDtoMapper.toProjectionList(eventWithViewsList);
     }
 
@@ -123,8 +123,8 @@ public class EventsServiceImpl implements EventsService {
         );
         EventWithRequests eventWithRequests =
                 eventWithRequestsRepository.get(wherePredicate, null, PageRequest.ofSize(1));
-        eventUtils.hit("/events/" + id, ip);
+        eventWithViewsHttpRepository.hit("/events/" + id, ip);
         return eventFullDtoMapper.toProjection(
-                eventWithViewsMapper.toProjection(eventWithRequests));
+                eventWithViewsHttpRepository.get(eventWithRequests));
     }
 }

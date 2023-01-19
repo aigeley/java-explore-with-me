@@ -11,7 +11,7 @@ import ru.practicum.ewm.model.event.dto.EventShortDtoMapper;
 import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.EventWithRequestsRepository;
 import ru.practicum.ewm.repository.ParticipationRequestRepository;
-import ru.practicum.ewm.service.projection.EventWithViewsMapper;
+import ru.practicum.ewm.repository.http.EventWithViewsHttpRepository;
 import ru.practicum.ewm.service.util.UserUtils;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class UsersRecommendationsServiceImpl implements UsersRecommendationsServ
     private final ParticipationRequestRepository participationRequestRepository;
     private final EventRepository eventRepository;
     private final EventWithRequestsRepository eventWithRequestsRepository;
-    private final EventWithViewsMapper eventWithViewsMapper;
+    private final EventWithViewsHttpRepository eventWithViewsHttpRepository;
     private final EventShortDtoMapper eventShortDtoMapper;
     private final UserUtils userUtils;
 
@@ -48,7 +48,7 @@ public class UsersRecommendationsServiceImpl implements UsersRecommendationsServ
         Predicate wherePredicate = event.id.in(eventIds);
         PageRequestFromElement pageRequest = PageRequestFromElement.of(0, eventIds.size(), new QSort(event.id.asc()));
         return eventShortDtoMapper.toProjectionList(
-                eventWithViewsMapper.toProjectionList(
+                eventWithViewsHttpRepository.getAll(
                         eventWithRequestsRepository.getAll(wherePredicate, null, pageRequest)));
     }
 }

@@ -11,7 +11,7 @@ public class UsersMarksApiController implements UsersMarksApi {
     private final UsersMarksService service;
 
     @Override
-    public MarkDto add(Long userId, Long eventId, Integer markValue) {
+    public MarkDto add(Long userId, Long eventId, Boolean markValue) {
         return service.add(userId, eventId, markValue);
     }
 

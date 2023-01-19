@@ -9,7 +9,6 @@ import ru.practicum.ewm.model.compilation.Compilation;
 import ru.practicum.ewm.model.compilation.dto.CompilationDto;
 import ru.practicum.ewm.model.compilation.dto.CompilationDtoMapper;
 import ru.practicum.ewm.repository.CompilationRepositoryCustom;
-import ru.practicum.ewm.service.projection.CompilationWithEventViewsMapper;
 import ru.practicum.ewm.service.util.CompilationUtils;
 
 import java.util.List;
@@ -22,7 +21,6 @@ public class CompilationsServiceImpl implements CompilationsService {
     private final CompilationRepositoryCustom compilationRepositoryCustom;
     private final CompilationUtils compilationUtils;
     private final CompilationDtoMapper compilationDtoMapper;
-    private final CompilationWithEventViewsMapper compilationWithEventViewsMapper;
 
     @Override
     public List<CompilationDto> getAll(Boolean pinned, Integer from, Integer size) {
@@ -37,13 +35,13 @@ public class CompilationsServiceImpl implements CompilationsService {
         PageRequestFromElement pageRequest = PageRequestFromElement.of(from, size, new QSort(compilation.id.asc()));
         List<Compilation> compilations = compilationRepositoryCustom.getAll(wherePredicate, pageRequest);
         return compilationDtoMapper.toProjectionList(
-                compilationWithEventViewsMapper.toProjectionList(compilations));
+                compilationUtils.toCompilationWithEventViewsList(compilations));
     }
 
     @Override
     public CompilationDto get(Long compId) {
         Compilation compilation = compilationUtils.getAndCheck(compId);
         return compilationDtoMapper.toProjection(
-                compilationWithEventViewsMapper.toProjection(compilation));
+                compilationUtils.toCompilationWithEventViews(compilation));
     }
 }

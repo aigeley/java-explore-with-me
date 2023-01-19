@@ -32,7 +32,7 @@ public class UsersMarksServiceImpl implements UsersMarksService {
 
     @Transactional
     @Override
-    public MarkDto add(Long userId, Long eventId, Integer markValue) {
+    public MarkDto add(Long userId, Long eventId, Boolean markValue) {
         userUtils.getAndCheck(userId);
 
         Event event = eventUtils.getAndCheck(eventId);

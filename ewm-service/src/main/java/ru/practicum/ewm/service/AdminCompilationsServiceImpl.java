@@ -10,7 +10,6 @@ import ru.practicum.ewm.model.compilation.dto.NewCompilationDto;
 import ru.practicum.ewm.model.compilation.dto.NewCompilationDtoMapper;
 import ru.practicum.ewm.model.event.Event;
 import ru.practicum.ewm.repository.CompilationRepository;
-import ru.practicum.ewm.service.projection.CompilationWithEventViewsMapper;
 import ru.practicum.ewm.service.util.CompilationUtils;
 import ru.practicum.ewm.service.util.EventUtils;
 
@@ -27,7 +26,6 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
     private final CompilationUtils compilationUtils;
     private final CompilationDtoMapper compilationDtoMapper;
     private final NewCompilationDtoMapper newCompilationDtoMapper;
-    private final CompilationWithEventViewsMapper compilationWithEventViewsMapper;
     private final EventUtils eventUtils;
 
     @Override
@@ -35,10 +33,12 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
         Compilation compilation = newCompilationDtoMapper.toElement(new Compilation(), newCompilationDto);
         Set<Event> events = new HashSet<>(eventUtils.getAllAndCheck(newCompilationDto.getEvents()));
         compilation.setEvents(events);
+
         Compilation compilationSaved = compilationRepository.save(compilation);
         log.info("saveCompilation: " + compilationSaved);
+
         return compilationDtoMapper.toProjection(
-                compilationWithEventViewsMapper.toProjection(compilationSaved));
+                compilationUtils.toCompilationWithEventViews(compilationSaved));
     }
 
     @Override

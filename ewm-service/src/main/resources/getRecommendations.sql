@@ -22,13 +22,13 @@ FROM (SELECT DISTINCT ON (e.category_id)
                LEFT JOIN marks likes
                          ON (
                                      likes.event_id = e.event_id
-                                 AND likes.mark_value = 1
+                                 AND likes.mark_value = true
                              )
           --Все дизлайки всех событий автора
                LEFT JOIN marks dislikes
                          ON (
                                      dislikes.event_id = e.event_id
-                                 AND dislikes.mark_value = 0
+                                 AND dislikes.mark_value = false
                              )
           --Предстоящие события того же автора
                JOIN events e1

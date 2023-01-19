@@ -91,7 +91,7 @@ public class AdminEventsServiceImpl implements AdminEventsService {
         eventUtils.setNewCategory(eventToUpdate, event.getCategory().getId(), adminUpdateEventRequest.getCategory());
 
         if (eventToUpdate.getState() == StateEnum.PUBLISHED &&
-                eventToUpdate.getRequestModeration() != event.getRequestModeration() &&
+                eventToUpdate.getRequestModeration().equals(event.getRequestModeration()) &&
                 !eventToUpdate.getRequestModeration()) {
             //одобряем все ожидающие запросы, если у опубликованного события сняли ограничение на модерацию
             participationRequestUtils.confirmAllPending(eventToUpdate.getId());

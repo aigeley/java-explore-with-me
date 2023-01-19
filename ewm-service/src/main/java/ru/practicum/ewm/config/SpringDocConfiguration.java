@@ -14,7 +14,7 @@ public class SpringDocConfiguration {
                 .info(
                         new Info()
                                 .title("Main service API")
-                                .version("1.0")
+                                .version("1.1")
                 );
     }
 }

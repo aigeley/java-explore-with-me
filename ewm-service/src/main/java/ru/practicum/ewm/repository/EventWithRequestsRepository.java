@@ -9,4 +9,7 @@ import java.util.List;
 public interface EventWithRequestsRepository {
     List<EventWithRequests> getAll(Predicate wherePredicate, Predicate havingPredicate,
                                    Pageable pageable);
+
+    EventWithRequests get(Predicate wherePredicate, Predicate havingPredicate,
+                          Pageable pageable);
 }

@@ -47,7 +47,9 @@ public class EventFullDtoMapper extends ElementProjectionMapper<EventWithViews, 
                 eventWithViews.getEvent().getRequestModeration(),
                 eventWithViews.getEvent().getState(),
                 eventWithViews.getEvent().getTitle(),
-                eventWithViews.getViews()
+                eventWithViews.getViews(),
+                eventWithViews.getLikes(),
+                eventWithViews.getDislikes()
         );
     }
 }

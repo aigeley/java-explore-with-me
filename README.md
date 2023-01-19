@@ -4,11 +4,11 @@
 
 https://github.com/aigeley/java-explore-with-me/pull/2
 
-Модель компонентов
+Модель компонентов:
 
 ![Модель компонентов](ewm_vision.png)
 
-ER-диаграмма
+ER-диаграмма:
 
 ![База данных](ewm_db.png)
 
@@ -22,6 +22,8 @@ Swagger UI для тестирования доступен по ссылкам:
 
 - ewm-service: http://localhost:8080
 - stats-server: http://localhost:9090
+
+Postman-тесты в файле `/postman/feature.json`
 
 При изменении кода сущностей `@Entity`, перезапустить кодогенерацию классов QueryDSL командой `mvn clean compile`.
 Сгенерированные классы скопировать из папки `/target/generated-sources/java`
@@ -79,18 +81,20 @@ CREATE DATABASE stats WITH OWNER test;
 
 --Удаление таблиц и сиквенсов
 --ewm-db
-DROP TABLE IF EXISTS ewm.events_compilations;
-DROP TABLE IF EXISTS ewm.compilations;
-DROP SEQUENCE IF EXISTS ewm.compilation_seq;
-DROP TABLE IF EXISTS ewm.participation_requests;
-DROP SEQUENCE IF EXISTS ewm.participation_request_seq;
-DROP TABLE IF EXISTS ewm.events;
-DROP SEQUENCE IF EXISTS ewm.event_seq;
-DROP TABLE IF EXISTS ewm.users;
-DROP SEQUENCE IF EXISTS ewm.user_seq;
-DROP TABLE IF EXISTS ewm.categories;
-DROP SEQUENCE IF EXISTS ewm.category_seq;
+DROP TABLE IF EXISTS marks;
+DROP SEQUENCE IF EXISTS mark_seq;
+DROP TABLE IF EXISTS events_compilations;
+DROP TABLE IF EXISTS compilations;
+DROP SEQUENCE IF EXISTS compilation_seq;
+DROP TABLE IF EXISTS participation_requests;
+DROP SEQUENCE IF EXISTS participation_request_seq;
+DROP TABLE IF EXISTS events;
+DROP SEQUENCE IF EXISTS event_seq;
+DROP TABLE IF EXISTS users;
+DROP SEQUENCE IF EXISTS user_seq;
+DROP TABLE IF EXISTS categories;
+DROP SEQUENCE IF EXISTS category_seq;
 --stats-db
-DROP TABLE IF EXISTS stats.endpoint_hits;
-DROP SEQUENCE IF EXISTS stats.endpoint_hit_seq;
+DROP TABLE IF EXISTS endpoint_hits;
+DROP SEQUENCE IF EXISTS endpoint_hit_seq;
 ```

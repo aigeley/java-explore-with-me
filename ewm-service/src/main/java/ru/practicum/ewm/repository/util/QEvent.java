@@ -22,7 +22,7 @@ import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QEvent extends EntityPathBase<Event> {
 
-    private static final long serialVersionUID = -179499786L;
+    private static final long serialVersionUID = -475675241L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 

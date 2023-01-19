@@ -21,7 +21,7 @@ import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QCompilation extends EntityPathBase<Compilation> {
 
-    private static final long serialVersionUID = -2109989688L;
+    private static final long serialVersionUID = -643306519L;
 
     public static final QCompilation compilation = new QCompilation("compilation");
 

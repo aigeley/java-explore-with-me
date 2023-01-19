@@ -3,6 +3,7 @@ package ru.practicum.ewm.service;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.querydsl.QSort;
 import org.springframework.stereotype.Service;
 import ru.practicum.element.model.PageRequestFromElement;
@@ -13,6 +14,7 @@ import ru.practicum.ewm.model.event.dto.EventFullDtoMapper;
 import ru.practicum.ewm.model.event.dto.EventShortDto;
 import ru.practicum.ewm.model.event.dto.EventShortDtoMapper;
 import ru.practicum.ewm.repository.EventWithRequestsRepository;
+import ru.practicum.ewm.repository.util.QMark;
 import ru.practicum.ewm.service.projection.EventWithRequests;
 import ru.practicum.ewm.service.projection.EventWithViews;
 import ru.practicum.ewm.service.projection.EventWithViewsMapper;
@@ -79,7 +81,8 @@ public class EventsServiceImpl implements EventsService {
         Predicate havingPredicate;
 
         if (onlyAvailable != null && onlyAvailable) {
-            havingPredicate = participationRequest.id.count().loe(event.participantLimit);
+            havingPredicate = participationRequest.id.count().loe(event.participantLimit)
+                    .or(event.participantLimit.eq(0));
         } else {
             havingPredicate = null;
         }
@@ -87,9 +90,14 @@ public class EventsServiceImpl implements EventsService {
         QSort qSort;
 
         if (sort == SortEnum.EVENT_DATE) {
-            qSort = new QSort(event.eventDate.asc());
+            //сортировка по дате события, от ближайших к более поздним
+            qSort = new QSort(event.eventDate.asc(), event.id.asc());
+        } else if (sort == SortEnum.LIKES) {
+            //сортировка по числу лайков, от большего числа к меньшему
+            QMark likes = new QMark("likes");
+            qSort = new QSort(likes.id.count().desc(), event.id.asc());
         } else {
-            //по умолчанию, сортировка в порядке создания событий
+            //по умолчанию, сортировка в порядке создания событий, от старых к новым
             qSort = new QSort(event.id.asc());
         }
 
@@ -99,7 +107,8 @@ public class EventsServiceImpl implements EventsService {
         List<EventWithViews> eventWithViewsList = eventWithViewsMapper.toProjectionList(eventWithRequestsList);
 
         if (sort == SortEnum.VIEWS) {
-            eventWithViewsList.sort(Comparator.comparingLong(EventWithViews::getViews));
+            //сортировка по числу просмотров, от большего числа к меньшему (только текущей страницы)
+            eventWithViewsList.sort(Comparator.comparing(EventWithViews::getViews, Comparator.reverseOrder()));
         }
 
         eventUtils.hit("/events", ip);
@@ -112,7 +121,8 @@ public class EventsServiceImpl implements EventsService {
                 event.id.eq(id),
                 event.state.eq(StateEnum.PUBLISHED)
         );
-        EventWithRequests eventWithRequests = eventUtils.getEventWithRequests(wherePredicate);
+        EventWithRequests eventWithRequests =
+                eventWithRequestsRepository.get(wherePredicate, null, PageRequest.ofSize(1));
         eventUtils.hit("/events/" + id, ip);
         return eventFullDtoMapper.toProjection(
                 eventWithViewsMapper.toProjection(eventWithRequests));

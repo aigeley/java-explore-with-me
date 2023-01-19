@@ -40,4 +40,10 @@ public class EventErrorHandler extends ErrorHandler {
             throws JsonProcessingException {
         return sendError(e, HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleEventDateNotPassYetException(EventDateNotPassYetException e)
+            throws JsonProcessingException {
+        return sendError(e, HttpStatus.FORBIDDEN);
+    }
 }

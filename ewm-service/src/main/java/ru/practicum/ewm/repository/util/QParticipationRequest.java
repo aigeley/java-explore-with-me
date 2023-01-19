@@ -20,7 +20,7 @@ import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QParticipationRequest extends EntityPathBase<ParticipationRequest> {
 
-    private static final long serialVersionUID = -1465690133L;
+    private static final long serialVersionUID = -1292469718L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 

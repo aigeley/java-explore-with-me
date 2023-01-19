@@ -34,4 +34,10 @@ public class ParticipationRequestErrorHandler extends ErrorHandler {
             ParticipationRequestorIsDifferentException e) throws JsonProcessingException {
         return sendError(e, HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleParticipationNotConfirmedException(ParticipationNotConfirmedException e)
+            throws JsonProcessingException {
+        return sendError(e, HttpStatus.FORBIDDEN);
+    }
 }

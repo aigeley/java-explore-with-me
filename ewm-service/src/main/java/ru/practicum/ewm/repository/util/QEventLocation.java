@@ -16,7 +16,7 @@ import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 @Generated("com.querydsl.codegen.DefaultEmbeddableSerializer")
 public class QEventLocation extends BeanPath<EventLocation> {
 
-    private static final long serialVersionUID = 2087566027L;
+    private static final long serialVersionUID = 26755692L;
 
     public static final QEventLocation eventLocation = new QEventLocation("eventLocation");
 

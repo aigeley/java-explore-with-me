@@ -33,7 +33,9 @@ public class EventShortDtoMapper extends ElementProjectionMapper<EventWithViews,
                 userShortDtoMapper.toProjection(eventWithViews.getEvent().getInitiator()),
                 eventWithViews.getEvent().getPaid(),
                 eventWithViews.getEvent().getTitle(),
-                eventWithViews.getViews()
+                eventWithViews.getViews(),
+                eventWithViews.getLikes(),
+                eventWithViews.getDislikes()
         );
     }
 }

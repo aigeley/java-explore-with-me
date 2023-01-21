@@ -21,12 +21,10 @@ import ru.practicum.ewm.model.event.dto.UpdateEventRequestMapper;
 import ru.practicum.ewm.model.user.User;
 import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.EventWithRequestsRepository;
+import ru.practicum.ewm.repository.http.EventWithViewsHttpRepository;
 import ru.practicum.ewm.service.projection.EventWithRequests;
-import ru.practicum.ewm.service.projection.EventWithRequestsMapper;
-import ru.practicum.ewm.service.projection.EventWithViewsMapper;
 import ru.practicum.ewm.service.util.CategoryUtils;
 import ru.practicum.ewm.service.util.EventUtils;
-import ru.practicum.ewm.service.util.ParticipationRequestUtils;
 import ru.practicum.ewm.service.util.UserUtils;
 
 import javax.transaction.Transactional;
@@ -40,24 +38,23 @@ import static ru.practicum.ewm.repository.util.QEvent.event;
 public class UsersEventsServiceImpl implements UsersEventsService {
     private final EventRepository eventRepository;
     private final EventWithRequestsRepository eventWithRequestsRepository;
+    private final EventWithViewsHttpRepository eventWithViewsHttpRepository;
     private final EventUtils eventUtils;
     private final NewEventDtoMapper newEventDtoMapper;
     private final EventFullDtoMapper eventFullDtoMapper;
     private final EventShortDtoMapper eventShortDtoMapper;
     private final UpdateEventRequestMapper updateEventRequestMapper;
-    private final EventWithViewsMapper eventWithViewsMapper;
-    private final EventWithRequestsMapper eventWithRequestsMapper;
     private final UserUtils userUtils;
     private final CategoryUtils categoryUtils;
-    private final ParticipationRequestUtils participationRequestUtils;
 
     @Override
     public List<EventShortDto> getAll(Long userId, Integer from, Integer size) {
         Predicate wherePredicate = event.initiator.id.eq(userId);
         PageRequestFromElement pageRequest = PageRequestFromElement.of(from, size, new QSort(event.id.asc()));
-        List<EventWithRequests> eventsWithRequests = eventWithRequestsRepository.getAll(wherePredicate,
+        List<EventWithRequests> eventWithRequestsList = eventWithRequestsRepository.getAll(wherePredicate,
                 null, pageRequest);
-        return eventShortDtoMapper.toProjectionList(eventUtils.getEventWithViewsList(eventsWithRequests));
+        return eventShortDtoMapper.toProjectionList(
+                eventWithViewsHttpRepository.getAll(eventWithRequestsList));
     }
 
     @Override
@@ -73,8 +70,8 @@ public class UsersEventsServiceImpl implements UsersEventsService {
         Event eventUpdated = eventRepository.save(eventToUpdate);
         log.info("updateEvent_1: " + eventUpdated);
         return eventFullDtoMapper.toProjection(
-                eventWithViewsMapper.toProjection(
-                        eventWithRequestsMapper.toProjection(eventUpdated)));
+                eventWithViewsHttpRepository.get(
+                        eventWithRequestsRepository.getByEvent(eventUpdated)));
     }
 
     @Override
@@ -89,8 +86,8 @@ public class UsersEventsServiceImpl implements UsersEventsService {
         Event eventAdded = eventRepository.save(eventToAdd);
         log.info("addEvent: " + eventAdded);
         return eventFullDtoMapper.toProjection(
-                eventWithViewsMapper.toProjection(
-                        eventWithRequestsMapper.toProjection(eventAdded)));
+                eventWithViewsHttpRepository.get(
+                        eventWithRequestsRepository.getByEvent(eventAdded)));
     }
 
     @Override
@@ -99,8 +96,8 @@ public class UsersEventsServiceImpl implements UsersEventsService {
         Event event = eventUtils.getAndCheck(eventId);
         EventCheck.belongsToUser(event, initiator.getId());
         return eventFullDtoMapper.toProjection(
-                eventWithViewsMapper.toProjection(
-                        eventWithRequestsMapper.toProjection(event)));
+                eventWithViewsHttpRepository.get(
+                        eventWithRequestsRepository.getByEvent(event)));
     }
 
     @Override
@@ -114,7 +111,7 @@ public class UsersEventsServiceImpl implements UsersEventsService {
         Event eventCancelled = eventRepository.save(event);
         log.info("cancelEvent: " + eventCancelled);
         return eventFullDtoMapper.toProjection(
-                eventWithViewsMapper.toProjection(
-                        eventWithRequestsMapper.toProjection(eventCancelled)));
+                eventWithViewsHttpRepository.get(
+                        eventWithRequestsRepository.getByEvent(eventCancelled)));
     }
 }

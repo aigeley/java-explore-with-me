@@ -162,6 +162,24 @@ public class EventFullDto {
     @JsonProperty("views")
     Long views;
 
+    /**
+     * Количество лайков
+     */
+    @Schema(name = "likes", example = "5",
+            description = "Количество лайков",
+            requiredMode = RequiredMode.NOT_REQUIRED)
+    @JsonProperty("likes")
+    Long likes;
+
+    /**
+     * Количество дизлайков
+     */
+    @Schema(name = "dislikes", example = "5",
+            description = "Количество дизлайков",
+            requiredMode = RequiredMode.NOT_REQUIRED)
+    @JsonProperty("dislikes")
+    Long dislikes;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

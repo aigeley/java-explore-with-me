@@ -7,12 +7,36 @@ import ru.practicum.ewm.model.event.Event;
 
 import java.util.Objects;
 
+/**
+ * Событие с просмотрами
+ */
 @Value
 @ToString
 public class EventWithViews implements Identifiable {
+    /**
+     * Событие
+     */
     Event event;
+
+    /**
+     * Количество одобренных заявок на участие в данном событии
+     */
     Long confirmedRequests;
+
+    /**
+     * Количество просмотров
+     */
     Long views;
+
+    /**
+     * Количество лайков
+     */
+    Long likes;
+
+    /**
+     * Количество дизлайков
+     */
+    Long dislikes;
 
     @Override
     public Long getId() {

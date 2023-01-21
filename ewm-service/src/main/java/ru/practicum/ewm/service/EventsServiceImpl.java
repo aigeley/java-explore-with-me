@@ -3,6 +3,7 @@ package ru.practicum.ewm.service;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.querydsl.QSort;
 import org.springframework.stereotype.Service;
 import ru.practicum.element.model.PageRequestFromElement;
@@ -13,9 +14,10 @@ import ru.practicum.ewm.model.event.dto.EventFullDtoMapper;
 import ru.practicum.ewm.model.event.dto.EventShortDto;
 import ru.practicum.ewm.model.event.dto.EventShortDtoMapper;
 import ru.practicum.ewm.repository.EventWithRequestsRepository;
+import ru.practicum.ewm.repository.http.EventWithViewsHttpRepository;
+import ru.practicum.ewm.repository.util.QMark;
 import ru.practicum.ewm.service.projection.EventWithRequests;
 import ru.practicum.ewm.service.projection.EventWithViews;
-import ru.practicum.ewm.service.projection.EventWithViewsMapper;
 import ru.practicum.ewm.service.util.EventUtils;
 
 import java.time.LocalDateTime;
@@ -33,9 +35,9 @@ import static ru.practicum.ewm.repository.util.QParticipationRequest.participati
 public class EventsServiceImpl implements EventsService {
     private final EventUtils eventUtils;
     private final EventWithRequestsRepository eventWithRequestsRepository;
+    private final EventWithViewsHttpRepository eventWithViewsHttpRepository;
     private final EventFullDtoMapper eventFullDtoMapper;
     private final EventShortDtoMapper eventShortDtoMapper;
-    private final EventWithViewsMapper eventWithViewsMapper;
 
     @Override
     public List<EventShortDto> getAll(String text, List<Long> categories, Boolean paid, String rangeStart,
@@ -79,7 +81,8 @@ public class EventsServiceImpl implements EventsService {
         Predicate havingPredicate;
 
         if (onlyAvailable != null && onlyAvailable) {
-            havingPredicate = participationRequest.id.count().loe(event.participantLimit);
+            havingPredicate = participationRequest.id.count().loe(event.participantLimit)
+                    .or(event.participantLimit.eq(0));
         } else {
             havingPredicate = null;
         }
@@ -87,22 +90,28 @@ public class EventsServiceImpl implements EventsService {
         QSort qSort;
 
         if (sort == SortEnum.EVENT_DATE) {
-            qSort = new QSort(event.eventDate.asc());
+            //сортировка по дате события, от ближайших к более поздним
+            qSort = new QSort(event.eventDate.asc(), event.id.asc());
+        } else if (sort == SortEnum.LIKES) {
+            //сортировка по числу лайков, от большего числа к меньшему
+            QMark likes = new QMark("likes");
+            qSort = new QSort(likes.id.count().desc(), event.id.asc());
         } else {
-            //по умолчанию, сортировка в порядке создания событий
+            //по умолчанию, сортировка в порядке создания событий, от старых к новым
             qSort = new QSort(event.id.asc());
         }
 
         PageRequestFromElement pageRequest = PageRequestFromElement.of(from, size, qSort);
         List<EventWithRequests> eventWithRequestsList =
                 eventWithRequestsRepository.getAll(wherePredicate, havingPredicate, pageRequest);
-        List<EventWithViews> eventWithViewsList = eventWithViewsMapper.toProjectionList(eventWithRequestsList);
+        List<EventWithViews> eventWithViewsList = eventWithViewsHttpRepository.getAll(eventWithRequestsList);
 
         if (sort == SortEnum.VIEWS) {
-            eventWithViewsList.sort(Comparator.comparingLong(EventWithViews::getViews));
+            //сортировка по числу просмотров, от большего числа к меньшему (только текущей страницы)
+            eventWithViewsList.sort(Comparator.comparing(EventWithViews::getViews, Comparator.reverseOrder()));
         }
 
-        eventUtils.hit("/events", ip);
+        eventWithViewsHttpRepository.hit("/events", ip);
         return eventShortDtoMapper.toProjectionList(eventWithViewsList);
     }
 
@@ -112,9 +121,10 @@ public class EventsServiceImpl implements EventsService {
                 event.id.eq(id),
                 event.state.eq(StateEnum.PUBLISHED)
         );
-        EventWithRequests eventWithRequests = eventUtils.getEventWithRequests(wherePredicate);
-        eventUtils.hit("/events/" + id, ip);
+        EventWithRequests eventWithRequests =
+                eventWithRequestsRepository.get(wherePredicate, null, PageRequest.ofSize(1));
+        eventWithViewsHttpRepository.hit("/events/" + id, ip);
         return eventFullDtoMapper.toProjection(
-                eventWithViewsMapper.toProjection(eventWithRequests));
+                eventWithViewsHttpRepository.get(eventWithRequests));
     }
 }

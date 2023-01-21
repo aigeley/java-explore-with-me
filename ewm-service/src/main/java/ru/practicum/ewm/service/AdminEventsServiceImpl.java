@@ -16,9 +16,8 @@ import ru.practicum.ewm.model.event.dto.EventFullDto;
 import ru.practicum.ewm.model.event.dto.EventFullDtoMapper;
 import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.EventWithRequestsRepository;
+import ru.practicum.ewm.repository.http.EventWithViewsHttpRepository;
 import ru.practicum.ewm.service.projection.EventWithRequests;
-import ru.practicum.ewm.service.projection.EventWithRequestsMapper;
-import ru.practicum.ewm.service.projection.EventWithViewsMapper;
 import ru.practicum.ewm.service.util.EventUtils;
 import ru.practicum.ewm.service.util.ParticipationRequestUtils;
 
@@ -37,11 +36,10 @@ import static ru.practicum.ewm.repository.util.QEvent.event;
 public class AdminEventsServiceImpl implements AdminEventsService {
     private final EventRepository eventRepository;
     private final EventWithRequestsRepository eventWithRequestsRepository;
+    private final EventWithViewsHttpRepository eventWithViewsHttpRepository;
     private final EventUtils eventUtils;
     private final EventFullDtoMapper eventFullDtoMapper;
     private final AdminUpdateEventRequestMapper adminUpdateEventRequestMapper;
-    private final EventWithRequestsMapper eventWithRequestsMapper;
-    private final EventWithViewsMapper eventWithViewsMapper;
     private final ParticipationRequestUtils participationRequestUtils;
 
     @Override
@@ -80,7 +78,7 @@ public class AdminEventsServiceImpl implements AdminEventsService {
                 eventWithRequestsRepository.getAll(wherePredicate, null, pageRequest);
 
         return eventFullDtoMapper.toProjectionList(
-                eventWithViewsMapper.toProjectionList(eventWithRequestsList));
+                eventWithViewsHttpRepository.getAll(eventWithRequestsList));
     }
 
     @Override
@@ -91,7 +89,7 @@ public class AdminEventsServiceImpl implements AdminEventsService {
         eventUtils.setNewCategory(eventToUpdate, event.getCategory().getId(), adminUpdateEventRequest.getCategory());
 
         if (eventToUpdate.getState() == StateEnum.PUBLISHED &&
-                eventToUpdate.getRequestModeration() != event.getRequestModeration() &&
+                eventToUpdate.getRequestModeration().equals(event.getRequestModeration()) &&
                 !eventToUpdate.getRequestModeration()) {
             //одобряем все ожидающие запросы, если у опубликованного события сняли ограничение на модерацию
             participationRequestUtils.confirmAllPending(eventToUpdate.getId());
@@ -100,8 +98,8 @@ public class AdminEventsServiceImpl implements AdminEventsService {
         Event eventUpdated = eventRepository.save(eventToUpdate);
         log.info("updateEvent: " + eventUpdated);
         return eventFullDtoMapper.toProjection(
-                eventWithViewsMapper.toProjection(
-                        eventWithRequestsMapper.toProjection(eventUpdated)));
+                eventWithViewsHttpRepository.get(
+                        eventWithRequestsRepository.getByEvent(eventUpdated)));
     }
 
     @Override
@@ -116,8 +114,8 @@ public class AdminEventsServiceImpl implements AdminEventsService {
         Event eventPublished = eventRepository.save(event);
         log.info("publishEvent: " + eventPublished);
         return eventFullDtoMapper.toProjection(
-                eventWithViewsMapper.toProjection(
-                        eventWithRequestsMapper.toProjection(eventPublished)));
+                eventWithViewsHttpRepository.get(
+                        eventWithRequestsRepository.getByEvent(eventPublished)));
     }
 
     @Override
@@ -129,7 +127,7 @@ public class AdminEventsServiceImpl implements AdminEventsService {
         Event eventRejected = eventRepository.save(event);
         log.info("rejectEvent: " + eventRejected);
         return eventFullDtoMapper.toProjection(
-                eventWithViewsMapper.toProjection(
-                        eventWithRequestsMapper.toProjection(eventRejected)));
+                eventWithViewsHttpRepository.get(
+                        eventWithRequestsRepository.getByEvent(eventRejected)));
     }
 }

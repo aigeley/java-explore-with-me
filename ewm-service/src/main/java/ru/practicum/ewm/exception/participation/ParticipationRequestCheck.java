@@ -5,6 +5,9 @@ import ru.practicum.ewm.model.participation.ParticipationRequest;
 import ru.practicum.ewm.model.participation.StatusEnum;
 
 public class ParticipationRequestCheck {
+    private ParticipationRequestCheck() {
+    }
+
     public static void userCouldParticipate(Event event, Long userId) {
         if (event.getInitiator().getId().equals(userId)) {
             throw new ParticipationForbiddenException(userId, event.getId());
@@ -33,4 +36,9 @@ public class ParticipationRequestCheck {
         }
     }
 
+    public static void userHasBeenOnEvent(ParticipationRequest request, Long userId, Long eventId) {
+        if (request == null) {
+            throw new ParticipationNotConfirmedException(userId, eventId);
+        }
+    }
 }

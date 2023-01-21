@@ -46,15 +46,18 @@ public class UsersRequestsServiceImpl implements UsersRequestsService {
         ParticipationRequest request = new ParticipationRequest();
         request.setRequester(requester);
         request.setEvent(event);
-        boolean isLimitCheckNeeded = !(event.getRequestModeration() || event.getParticipantLimit() == 0);
+        boolean isLimitCheckNeeded = (event.getRequestModeration() && event.getParticipantLimit() != 0);
         Long confirmedRequests;
 
         if (isLimitCheckNeeded) {
             confirmedRequests = participationRequestUtils.getConfirmedRequests(event.getId());
             ParticipationRequestCheck.participantLimitIsReached(event, confirmedRequests);
-            request.setStatus(StatusEnum.CONFIRMED);
         } else {
             confirmedRequests = 0L;
+        }
+
+        if (!event.getRequestModeration()) {
+            request.setStatus(StatusEnum.CONFIRMED);
         }
 
         ParticipationRequest requestAdded = participationRequestRepository.save(request);

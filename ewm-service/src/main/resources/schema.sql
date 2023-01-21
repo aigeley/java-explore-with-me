@@ -67,3 +67,16 @@ CREATE TABLE IF NOT EXISTS events_compilations
         ON DELETE CASCADE,
     CONSTRAINT events_compilations_event_fk FOREIGN KEY (event_id) REFERENCES events (event_id) ON DELETE CASCADE
 );
+CREATE SEQUENCE IF NOT EXISTS mark_seq;
+CREATE TABLE IF NOT EXISTS marks
+(
+    mark_id    BIGINT    DEFAULT NEXTVAL('mark_seq') NOT NULL,
+    created    TIMESTAMP DEFAULT CURRENT_TIMESTAMP   NOT NULL,
+    event_id   BIGINT                                NOT NULL,
+    user_id    BIGINT                                NOT NULL,
+    mark_value BOOLEAN                               NOT NULL,
+    CONSTRAINT mark_pk PRIMARY KEY (mark_id),
+    CONSTRAINT mark_uq UNIQUE (event_id, user_id),
+    CONSTRAINT mark_user_fk FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+    CONSTRAINT mark_event_fk FOREIGN KEY (event_id) REFERENCES events (event_id) ON DELETE CASCADE
+);

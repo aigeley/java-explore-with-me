@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 public class EventCheck {
     public static final int VALID_PUBLISH_HOURS = 1;
 
+    private EventCheck() {
+    }
+
     public static void eventDateHasGap(Event event, LocalDateTime now) {
         if (event.getEventDate().isBefore(now.plusHours(VALID_PUBLISH_HOURS))) {
             throw new EventDateTooLateException(event.getId(), event.getEventDate());
@@ -41,6 +44,12 @@ public class EventCheck {
     public static void couldBeUpdatedByUser(Event event) {
         if (event.getState() == StateEnum.PUBLISHED) {
             throw new EventStateIncorrectException(event.getId(), event.getState(), StateEnum.PENDING);
+        }
+    }
+
+    public static void eventDateNotPassYet(Event event, LocalDateTime now) {
+        if (event.getEventDate().isAfter(now.plusHours(VALID_PUBLISH_HOURS))) {
+            throw new EventDateNotPassYetException(event.getId(), event.getEventDate());
         }
     }
 }
